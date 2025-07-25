@@ -243,9 +243,11 @@ public class Character {
      */
     public void unequipItem() {
         if (equippedItem != null && equippedItem.isPassive()) {
-            adjustStats();
+            this.equippedItem = null; // Remove the item first
+            adjustStats(); // Then recalculate stats without the item
+        } else {
+            this.equippedItem = null;
         }
-        this.equippedItem = null;
     }
 
     /**
@@ -501,10 +503,11 @@ public class Character {
     }
 
     /**
-     * Resets the character's stats to their maximum values (including race bonuses) for the start of the
+     * Resets the character's stats to their maximum values (including race bonuses and equipped items) for the start of the
      * battle.
      */
     public void resetStats() {
+        adjustStats(); // Recalculate max values based on currently equipped items
         this.hp = maxHP;
         this.ep = maxEP;
     }
