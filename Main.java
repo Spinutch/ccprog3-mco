@@ -118,7 +118,7 @@ public class Main {
                             Race[] races = Race.show_race_array();
                             for (int i = 0; i < races.length; i++) {
                                 Race race = races[i];
-                                System.out.printf("%d. %s\n", i + 1, race.getName());
+                                System.out.printf("- %s\n", race.getName());
                                 System.out.println("   " + race.getDescription());
                                 String bonus = "";
                                 if (race.getHpBonus() > 0) {
@@ -135,15 +135,19 @@ public class Main {
                                 System.out.println("   Bonus: " + bonus);
                                 System.out.println("---------------------------------------------------------");
                             }
-                            System.out.print("Choose your race (1-" + races.length + "): ");
-                            int raceChoice = getIntInput(sc);
-                            if (raceChoice >= 1 && raceChoice <= races.length) {
-                                selectedRace = races[raceChoice - 1];
-                                checkRace = true;
-                                System.out.println("\n[You have chosen the " + selectedRace.getName() + "]");
-                            } else {
+                            System.out.print("Type the name of your chosen race: ");
+                            String raceInput = sc.nextLine().trim();
+                            for (int i = 0; i < races.length; i++) {
+                                if (races[i].getName().equalsIgnoreCase(raceInput)) {
+                                    selectedRace = races[i];
+                                    checkRace = true;
+                                    System.out.println("\n[You have chosen the " + selectedRace.getName() + "]");
+                                    break;
+                                }
+                            }
+                            if (!checkRace) {
                                 System.out.println("\n---------------------------------------------------------");
-                                System.out.println("      Invalid choice! Please choose 1-" + races.length + ".");
+                                System.out.println("      Invalid choice! Please type a valid race name.");
                                 System.out.println("---------------------------------------------------------");
                             }
                         }
