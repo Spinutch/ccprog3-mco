@@ -46,19 +46,40 @@ public class Main {
                 battle.startBattle();
             } while (rematch(sc));
             
-            // After battle ends, return to character management
+            // Ask what to do next
             System.out.println("\n=========================================================");
-            System.out.println("           Returning to character management");
-            System.out.println("=========================================================\n");
+            System.out.println("What would you like to do next?");
+            System.out.println("1 - Continue with same characters");
+            System.out.println("2 - Return to character management");
+            System.out.println("3 - Exit game");
+            System.out.print("Choose an option: ");
+            int nextAction = getIntInput(sc);
             
-            // Player 1 character management
-            characterManagement(sc, charactersP1, charactersP2, "Player 1");
-            
-            // Player 2 character management
-            characterManagement(sc, charactersP2, charactersP1, "Player 2");
-            
-            // Start new battle
-            System.out.println("\nBoth players have finished character management. The battle will now begin!");
+            switch (nextAction) {
+                case 1: // Continue with same characters
+                    System.out.println("\nContinuing with the same characters. Starting new battle!");
+                    break;
+                case 2: // Return to character management
+                    System.out.println("\n=========================================================");
+                    System.out.println("           Returning to character management");
+                    System.out.println("=========================================================\n");
+                    
+                    // Player 1 character management (preserving existing characters)
+                    characterManagement(sc, charactersP1, charactersP2, "Player 1");
+                    
+                    // Player 2 character management (preserving existing characters)
+                    characterManagement(sc, charactersP2, charactersP1, "Player 2");
+                    
+                    System.out.println("\nBoth players have finished character management. The battle will now begin!");
+                    break;
+                case 3: // Exit game
+                    playingGame = false;
+                    System.out.println("\nThank you for playing Fatal Fantasy: Tactics!");
+                    break;
+                default:
+                    System.out.println("Invalid option. Continuing with same characters.");
+                    break;
+            }
         }
         sc.close();
     }
@@ -79,7 +100,14 @@ public class Main {
      */
     private static int characterManagement(Scanner sc, Character[] characters, Character[] otherCharacters,
             String playerName) {
+        // Count existing characters
         int totalCharacters = 0;
+        for (int i = 0; i < characters.length; i++) {
+            if (characters[i] != null) {
+                totalCharacters++;
+            }
+        }
+        
         int characterSelect;
         ArrayList<Ability> setAbilities = new ArrayList<>();
 
