@@ -335,7 +335,7 @@ public class Main {
                         boolean editingDone = false;
                         while (!editingDone) {
                             System.out.println("\n---------------------------------------------------------");
-                            System.out.println("            [EDITING " + characterToEdit.getName().toUpperCase() + "]");
+                            System.out.println("                   [EDITING CHARACTER");
                             System.out.println("---------------------------------------------------------");
                             System.out.println("1 - Edit Abilities");
                             System.out.println("2 - Manage Magic Items");
