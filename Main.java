@@ -39,10 +39,27 @@ public class Main {
         // START THE BATTLE CLASS
         System.out.println("\nBoth players have finished character management. The battle will now begin!");
 
-        Battle battle = new Battle(selectedCharacterP1, selectedCharacterP2, sc);
-        do {
-            battle.startBattle();
-        } while (rematch(sc));
+        boolean playingGame = true;
+        while (playingGame) {
+            Battle battle = new Battle(selectedCharacterP1, selectedCharacterP2, sc);
+            do {
+                battle.startBattle();
+            } while (rematch(sc));
+            
+            // After battle ends, return to character management
+            System.out.println("\n=========================================================");
+            System.out.println("           Returning to character management");
+            System.out.println("=========================================================\n");
+            
+            // Player 1 character management
+            characterManagement(sc, charactersP1, charactersP2, "Player 1");
+            
+            // Player 2 character management
+            characterManagement(sc, charactersP2, charactersP1, "Player 2");
+            
+            // Start new battle
+            System.out.println("\nBoth players have finished character management. The battle will now begin!");
+        }
         sc.close();
     }
 
