@@ -98,13 +98,10 @@ public class AllAbilities {
         public static ArrayList<Ability> getAllAbilities() {
                 ArrayList<Ability> allAbilities = new ArrayList<>();
                 
-                // Add all Mage abilities
                 allAbilities.addAll(getAbilitiesByClass("Mage"));
                 
-                // Add all Rogue abilities
                 allAbilities.addAll(getAbilitiesByClass("Rogue"));
                 
-                // Add all Warrior abilities
                 allAbilities.addAll(getAbilitiesByClass("Warrior"));
                 
                 return allAbilities;

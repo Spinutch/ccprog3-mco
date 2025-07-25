@@ -11,7 +11,10 @@
  *   - Manages ability list and EP cost validation
  *   - Tracks battle-related flags like defending or recharging
  *   - Supports utility methods for damage, healing, energy recovery, and stat resets
+ *   - Magic item inventory and equipment system
  */
+
+import java.util.*;
 
 public class Character {
     private String name;
@@ -25,6 +28,9 @@ public class Character {
     private boolean isDefending;
     private boolean isEvading;
     private boolean isShielded = false;
+    private ArrayList<MagicItem> inventory;
+    private MagicItem equippedItem;
+    private int winCount;
 
     public static final int BASE_MAX_HP = 100;
     public static final int BASE_MAX_EP = 50;
@@ -43,13 +49,26 @@ public class Character {
         this.race = race;
         this.characterClass = characterClass;
         // Calculate max HP and EP with race bonuses
-        this.maxHP = BASE_MAX_HP + (race != null ? race.getHpBonus() : 0);
-        this.maxEP = BASE_MAX_EP + (race != null ? race.getEpBonus() : 0);
+        int baseMaxHP;
+        if (race != null) {
+            baseMaxHP = BASE_MAX_HP + race.getHpBonus();
+        } else {
+            baseMaxHP = BASE_MAX_HP;
+        }
+        int baseMaxEP;
+        if (race != null) {
+            baseMaxEP = BASE_MAX_EP + race.getEpBonus();
+        } else {
+            baseMaxEP = BASE_MAX_EP;
+        }
         // Initialize current HP and EP to max values
-        this.hp = this.maxHP;
-        this.ep = this.maxEP;
+        this.hp = this.maxHP = baseMaxHP;
+        this.ep = this.maxEP = baseMaxEP;
         this.abilities = abilities;
         this.isDefending = false;
+        this.inventory = new ArrayList<>();
+        this.equippedItem = null;
+        this.winCount = 0;
     }
 
     // GETTERS
@@ -140,6 +159,161 @@ public class Character {
         this.abilities = abilities;
     }
 
+    /**
+     * Returns the character's magic item inventory.
+     * 
+     * @return ArrayList of magic items in inventory
+     */
+    public ArrayList<MagicItem> getInventory() {
+        return inventory;
+    }
+
+    /**
+     * Returns the character's currently equipped magic item.
+     * 
+     * @return The equipped magic item, or null if none equipped
+     */
+    public MagicItem getEquippedItem() {
+        return equippedItem;
+    }
+
+    /**
+     * Returns the character's win count.
+     * 
+     * @return The number of wins this character has
+     */
+    public int getWinCount() {
+        return winCount;
+    }
+
+    /**
+     * Increments the character's win count and awards magic item if applicable.
+     */
+    public void incrementWinCount() {
+        this.winCount++;
+        // Award magic item every third win
+        if (winCount % 3 == 0) {
+            MagicItem newItem = AllMagicItems.getRandomItem();
+            if (newItem != null) {
+                addItemToInventory(newItem);
+                System.out.println("\n[You got a magic item!] " + name + " received: " + newItem.getName());
+                System.out.println("   " + newItem.getEffect());
+            }
+        }
+    }
+
+    /**
+     * Adds a magic item to the character's inventory.
+     * 
+     * @param item The magic item to add
+     */
+    public void addItemToInventory(MagicItem item) {
+        inventory.add(item);
+    }
+
+    /**
+     * Removes a magic item from the character's inventory.
+     * 
+     * @param item The magic item to remove
+     * @return true if the item was successfully removed, false if not found
+     */
+    public boolean removeItemFromInventory(MagicItem item) {
+        return inventory.remove(item);
+    }
+
+    /**
+     * Equips a magic item from the inventory.
+     * 
+     * @param item The magic item to equip
+     * @return true if successfully equipped, false if item not in inventory
+     */
+    public boolean equipItem(MagicItem item) {
+        if (inventory.contains(item)) {
+            this.equippedItem = item;
+            if (item.isPassive()) {
+                adjustStats();
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Unequips the currently equipped magic item.
+     */
+    public void unequipItem() {
+        if (equippedItem != null && equippedItem.isPassive()) {
+            adjustStats();
+        }
+        this.equippedItem = null;
+    }
+
+    /**
+     * Uses a single-use magic item and removes it from inventory.
+     * 
+     * @param item The single-use magic item to use
+     * @return true if successfully used, false if not usable
+     */
+    public boolean useMagicItem(MagicItem item) {
+        if (!inventory.contains(item) || !item.isSingleUse()) {
+            return false;
+        }
+
+        // Apply the item's effects
+        if (item.getHpRestore() > 0) {
+            heal(item.getHpRestore());
+            System.out.println(name + " restored " + item.getHpRestore() + " HP!");
+        }
+        if (item.getEpRestore() > 0) {
+            restoreEP(item.getEpRestore());
+            System.out.println(name + " restored " + item.getEpRestore() + " EP!");
+        }
+        if (item.shieldAll()) {
+            this.isShielded = true;
+            System.out.println(name + " is protected by a magical barrier!");
+        }
+
+        // Remove the item from inventory after use
+        removeItemFromInventory(item);
+        return true;
+    }
+
+    /**
+     * Updates max HP and EP based on equipped passive items.
+     */
+    private void adjustStats() {
+        // Reset to base values with race bonuses
+        int baseMaxHP = BASE_MAX_HP + (race != null ? race.getHpBonus() : 0);
+        int baseMaxEP = BASE_MAX_EP + (race != null ? race.getEpBonus() : 0);
+
+        if (equippedItem != null && equippedItem.isPassive()) {
+            this.maxHP = baseMaxHP + equippedItem.getHpBonus();
+            this.maxEP = baseMaxEP + equippedItem.getEpBonus();
+        } else {
+            this.maxHP = baseMaxHP;
+            this.maxEP = baseMaxEP;
+        }
+
+        if (hp > maxHP) hp = maxHP;
+        if (ep > maxEP) ep = maxEP;
+    }
+
+    /**
+     * Applies passive effects at the start of turn (regeneration, EP gain).
+     */
+    public void applyPassiveEffects() {
+        if (equippedItem != null && equippedItem.isPassive()) {
+            if (equippedItem.isHealPerTurn()) {
+                heal(equippedItem.getHealAmount());
+                System.out.println(name + " regenerated " + equippedItem.getHealAmount() + " HP from " + equippedItem.getName());
+            }
+            if (equippedItem.getEpPerTurn() > 0) {
+                restoreEP(equippedItem.getEpPerTurn());
+                System.out.println(name + " gained " + equippedItem.getEpPerTurn() + " EP from " + equippedItem.getName());
+            }
+        }
+    }
+
     // HELPER METHODS
 
     /*
@@ -180,6 +354,19 @@ public class Character {
             this.hp = maxHP;
         } else {
             this.hp += amount;
+        }
+    }
+
+    /**
+     * Restores the character's EP by the specified amount, capped at maximum EP.
+     * 
+     * @param amount The amount of EP to restore.
+     */
+    public void restoreEP(int amount) {
+        if (ep + amount > maxEP) {
+            this.ep = maxEP;
+        } else {
+            this.ep += amount;
         }
     }
 
@@ -263,7 +450,7 @@ public class Character {
     }
 
     /**
-     * Displays the character's details, including name, race, class, HP, EP, and
+     * Displays the character's details, including name, race, class, HP, EP, magic items, and
      * abilities.
      */
     public void displayCharacter() {
@@ -272,6 +459,27 @@ public class Character {
         System.out.println("Class: " + characterClass);
         System.out.println("HP: " + hp + "/" + maxHP);
         System.out.println("EP: " + ep + "/" + maxEP);
+        System.out.println("Wins: " + winCount);
+        
+        // Display equipped item
+        if (equippedItem != null) {
+            System.out.println("Equipped Item: " + equippedItem.getName() + " (" + equippedItem.getActivationType() + ")");
+            System.out.println("   Effect: " + equippedItem.getEffect());
+        } else {
+            System.out.println("Equipped Item: None");
+        }
+        
+        // Display inventory
+        System.out.println("Inventory (" + inventory.size() + " items):");
+        if (inventory.isEmpty()) {
+            System.out.println("   No items");
+        } else {
+            for (int i = 0; i < inventory.size(); i++) {
+                MagicItem item = inventory.get(i);
+                System.out.println("   " + (i + 1) + ". " + item.getName() + " (" + item.getActivationType() + ")");
+            }
+        }
+        
         System.out.println("Abilities:");
         for (Ability ability : abilities) {
             System.out.println("- " + ability.getName() + ": " + ability.getDescription());

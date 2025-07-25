@@ -285,53 +285,40 @@ public class Main {
 
                     if (indexToEdit >= 0 && indexToEdit < totalCharacters) {
                         Character characterToEdit = characters[indexToEdit];
-                        String currentClass = characterToEdit.getCharacterClass();
-
-                        ArrayList<Ability> availableAbilities = AllAbilities.getAbilitiesByClass(currentClass);
-
-                        System.out.println("\nChoose 3 new abilities for " + characterToEdit.getName() + " ("
-                                + currentClass + "):");
-                        System.out.println();
-                        for (int i = 0; i < availableAbilities.size(); i++) {
-                            Ability ability = availableAbilities.get(i);
-                            System.out.printf("%d. %s (EP: %d) - %s\n", i + 1, ability.getName(), ability.getEpCost(),
-                                    ability.getDescription());
-                        }
-                        System.out.println();
-                        ArrayList<Ability> newAbilities = new ArrayList<>();
-                        for (int i = 0; i < 3; i++) {
-                            boolean validChoice = false;
-                            while (!validChoice) {
-                                String ctr = "";
-                                switch (i) {
-                                    case 0:
-                                        ctr = "first";
-                                        break;
-                                    case 1:
-                                        ctr = "second";
-                                        break;
-                                    case 2:
-                                        ctr = "third";
-                                        break;
-                                }
-                                System.out.print("Choose your " + ctr + " ability: ");
-
-                                int abilityChoice = getIntInput(sc);
-                                if (abilityChoice >= 1 && abilityChoice <= availableAbilities.size()) {
-                                    newAbilities.add(availableAbilities.get(abilityChoice - 1));
-                                    validChoice = true;
-                                } else {
+                        
+                        // Edit submenu
+                        boolean editingDone = false;
+                        while (!editingDone) {
+                            System.out.println("\n---------------------------------------------------------");
+                            System.out.println("            [EDITING " + characterToEdit.getName().toUpperCase() + "]");
+                            System.out.println("---------------------------------------------------------");
+                            System.out.println("1 - Edit Abilities");
+                            System.out.println("2 - Manage Magic Items");
+                            System.out.println("3 - View Character Details");
+                            System.out.println("4 - Finish Editing");
+                            System.out.print("\nWhat would you like to edit: ");
+                            int editChoice = getIntInput(sc);
+                            
+                            switch (editChoice) {
+                                case 1: // Edit Abilities
+                                    editCharacterAbilities(sc, characterToEdit);
+                                    break;
+                                case 2: // Manage Magic Items
+                                    manageMagicItems(sc, characterToEdit);
+                                    break;
+                                case 3: // View Character Details
+                                    characterToEdit.displayCharacter();
+                                    break;
+                                case 4: // Finish Editing
+                                    editingDone = true;
+                                    System.out.println("\n[Finished editing " + characterToEdit.getName() + "]");
+                                    break;
+                                default:
                                     System.out.println("---------------------------------------------------------");
-                                    System.out.println(" Invalid! Please choose between the available abilities.");
+                                    System.out.println("          Invalid option! Please try again.");
                                     System.out.println("---------------------------------------------------------");
-                                }
                             }
                         }
-
-                        characterToEdit.setAbilities(newAbilities.toArray(new Ability[0]));
-
-                        System.out.println("\nHere is your new updated character!");
-                        characterToEdit.displayCharacter();
 
                     } else {
                         System.out.println("---------------------------------------------------------");
@@ -507,6 +494,199 @@ public class Main {
                 System.out.println("          Invalid input! Please enter yes or no.");
                 System.out.println("---------------------------------------------------------\n");
             }
+        }
+    }
+
+    /**
+     * Handles editing a character's abilities.
+     * 
+     * @param sc The Scanner object
+     * @param character The character to edit
+     */
+    private static void editCharacterAbilities(Scanner sc, Character character) {
+        String currentClass = character.getCharacterClass();
+        ArrayList<Ability> availableAbilities = AllAbilities.getAbilitiesByClass(currentClass);
+
+        System.out.println("\nChoose 3 new abilities for " + character.getName() + " (" + currentClass + "):");
+        System.out.println();
+        for (int i = 0; i < availableAbilities.size(); i++) {
+            Ability ability = availableAbilities.get(i);
+            System.out.printf("%d. %s (EP: %d) - %s\n", i + 1, ability.getName(), ability.getEpCost(),
+                    ability.getDescription());
+        }
+        System.out.println();
+        
+        ArrayList<Ability> newAbilities = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            boolean validChoice = false;
+            while (!validChoice) {
+                String ctr = "";
+                switch (i) {
+                    case 0:
+                        ctr = "first";
+                        break;
+                    case 1:
+                        ctr = "second";
+                        break;
+                    case 2:
+                        ctr = "third";
+                        break;
+                }
+                System.out.print("Choose your " + ctr + " ability: ");
+
+                int abilityChoice = getIntInput(sc);
+                if (abilityChoice >= 1 && abilityChoice <= availableAbilities.size()) {
+                    newAbilities.add(availableAbilities.get(abilityChoice - 1));
+                    validChoice = true;
+                } else {
+                    System.out.println("---------------------------------------------------------");
+                    System.out.println(" Invalid! Please choose between the available abilities.");
+                    System.out.println("---------------------------------------------------------");
+                }
+            }
+        }
+
+        character.setAbilities(newAbilities.toArray(new Ability[0]));
+        System.out.println("\n[Abilities updated successfully!]");
+    }
+
+    /**
+     * Handles magic item management for a character.
+     * 
+     * @param sc The Scanner object
+     * @param character The character to manage items for
+     */
+    private static void manageMagicItems(Scanner sc, Character character) {
+        boolean managingItems = true;
+        while (managingItems) {
+            System.out.println("\n---------------------------------------------------------");
+            System.out.println("                 MAGIC ITEM MANAGEMENT");
+            System.out.println("---------------------------------------------------------");
+            System.out.println("1 - View Inventory");
+            System.out.println("2 - Equip Item");
+            System.out.println("3 - Unequip Item");
+            System.out.println("4 - Back to Character Editing");
+            System.out.print("\nChoose an option: ");
+            int itemChoice = getIntInput(sc);
+            
+            switch (itemChoice) {
+                case 1: // View Inventory
+                    displayInventory(character);
+                    break;
+                case 2: // Equip Item
+                    equipMagicItem(sc, character);
+                    break;
+                case 3: // Unequip Item
+                    unequipMagicItem(character);
+                    break;
+                case 4: // Back to Character Editing
+                    managingItems = false;
+                    break;
+                default:
+                    System.out.println("---------------------------------------------------------");
+                    System.out.println("          Invalid option! Please try again.");
+                    System.out.println("---------------------------------------------------------");
+            }
+        }
+    }
+
+    /**
+     * Displays a character's magic item inventory.
+     * 
+     * @param character The character whose inventory to display
+     */
+    private static void displayInventory(Character character) {
+        System.out.println("\n" + character.getName() + "'s Magic Item Inventory:");
+        System.out.println("---------------------------------------------------------");
+        
+        // Show equipped item
+        if (character.getEquippedItem() != null) {
+            System.out.println("You have equipped " + character.getEquippedItem().toString());
+        } else {
+            System.out.println("You did not equip any magic items.");
+        }
+
+        System.out.println("---------------------------------------------------------");
+        System.out.println("\n                  PLAYER INVENTORY");
+        System.out.println("---------------------------------------------------------");
+        ArrayList<MagicItem> inventory = character.getInventory();
+        if (inventory.isEmpty()) {
+            System.out.println("Sorry, you currently have no magic items in your inventory.");
+        } else {
+            for (int i = 0; i < inventory.size(); i++) {
+                MagicItem item = inventory.get(i);
+                System.out.println("   " + (i + 1) + ". " + item.toString());
+                System.out.println("      " + item.getDescription());
+            }
+        }
+    }
+
+    /**
+     * Handles equipping a magic item.
+     * 
+     * @param sc The Scanner object
+     * @param character The character to equip an item for
+     */
+    private static void equipMagicItem(Scanner sc, Character character) {
+        ArrayList<MagicItem> inventory = character.getInventory();
+        
+        if (inventory.isEmpty()) {
+            System.out.println("\n" + character.getName() + " has no items to equip.");
+            return;
+        }
+        
+        System.out.println("\nSelect an item to equip:");
+        for (int i = 0; i < inventory.size(); i++) {
+            MagicItem item = inventory.get(i);
+            System.out.println((i + 1) + ". " + item.toString());
+        }
+        
+        System.out.print("Choose item to equip (0 to cancel): ");
+        int choice = getIntInput(sc);
+        
+        if (choice == 0) {
+            return;
+        }
+        
+        if (choice >= 1 && choice <= inventory.size()) {
+            MagicItem itemToEquip = inventory.get(choice - 1);
+            
+            if (character.getEquippedItem() != null) {
+                System.out.println("\n" + character.getName() + " already has " + 
+                    character.getEquippedItem().getName() + " equipped.");
+                System.out.print("Unequip current item and equip " + itemToEquip.getName() + "? (yes/no): ");
+                String confirm = sc.nextLine().trim().toLowerCase();
+                if (!confirm.equals("yes") && !confirm.equals("y")) {
+                    return;
+                }
+                character.unequipItem();
+            }
+            
+            if (character.equipItem(itemToEquip)) {
+                System.out.println("\n[" + itemToEquip.getName() + " equipped successfully!]");
+                if (itemToEquip.isPassive()) {
+                    System.out.println("Passive effect: " + itemToEquip.getEffect());
+                }
+            } else {
+                System.out.println("\nFailed to equip item.");
+            }
+        } else {
+            System.out.println("\nInvalid choice.");
+        }
+    }
+
+    /**
+     * Handles unequipping the currently equipped magic item.
+     * 
+     * @param character The character to unequip an item from
+     */
+    private static void unequipMagicItem(Character character) {
+        if (character.getEquippedItem() == null) {
+            System.out.println("\n" + character.getName() + " has no item equipped.");
+        } else {
+            String itemName = character.getEquippedItem().getName();
+            character.unequipItem();
+            System.out.println("\n[" + itemName + " unequipped successfully!]");
         }
     }
 }
