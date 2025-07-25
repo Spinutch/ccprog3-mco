@@ -15,31 +15,39 @@
 
 public class Character {
     private String name;
+    private Race race;
     private String characterClass;
     private int hp;
     private int ep;
+    private int maxHP;
+    private int maxEP;
     private Ability[] abilities;
     private boolean isDefending;
     private boolean isEvading;
     private boolean isShielded = false;
 
-    public static final int MAX_HP = 100;
-    public static final int MAX_EP = 50;
+    public static final int BASE_MAX_HP = 100;
+    public static final int BASE_MAX_EP = 50;
 
     /**
-     * Constructs a Character object with the specified name, class name, and list of abilities.
-     * Initializes the character's HP and EP to their maximum values and sets all combat flags to false.
+     * Constructs a Character object with the specified name, race, class name, and list of abilities.
+     * Initializes the character's HP and EP to their maximum values (including race bonuses) and sets all combat flags to false.
      *
      * @param name the unique name of the character
+     * @param race the race of the character (e.g., Human, Dwarf, Elf, Gnome)
      * @param characterClass the class type of the character (e.g., Mage, Rogue, Warrior)
      * @param abilities[] the list of abilities selected by the character from their class pool
      */
-
-    public Character(String name, String characterClass, Ability[] abilities) {
+    public Character(String name, Race race, String characterClass, Ability[] abilities) {
         this.name = name;
+        this.race = race;
         this.characterClass = characterClass;
-        this.hp = MAX_HP;
-        this.ep = MAX_EP;
+        // Calculate max HP and EP with race bonuses
+        this.maxHP = BASE_MAX_HP + (race != null ? race.getHpBonus() : 0);
+        this.maxEP = BASE_MAX_EP + (race != null ? race.getEpBonus() : 0);
+        // Initialize current HP and EP to max values
+        this.hp = this.maxHP;
+        this.ep = this.maxEP;
         this.abilities = abilities;
         this.isDefending = false;
     }
@@ -53,6 +61,15 @@ public class Character {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Returns the character's race.
+     * 
+     * @return The race of the character.
+     */
+    public Race getRace() {
+        return race;
     }
 
     /**
@@ -74,12 +91,30 @@ public class Character {
     }
 
     /**
+     * Returns the character's maximum HP (including race bonuses).
+     * 
+     * @return The maximum HP of the character.
+     */
+    public int getMaxHP() {
+        return maxHP;
+    }
+
+    /**
      * Returns the character's current EP.
      * 
      * @return The current EP of the character.
      */
     public int getEP() {
         return ep;
+    }
+
+    /**
+     * Returns the character's maximum EP (including race bonuses).
+     * 
+     * @return The maximum EP of the character.
+     */
+    public int getMaxEP() {
+        return maxEP;
     }
 
     /**
@@ -136,13 +171,13 @@ public class Character {
 
     /**
      * Heals the character by depending on the amount, while it also checks if it
-     * exceeds MAX_HP.
+     * exceeds the character's maximum HP (including race bonuses).
      * 
      * @param amount The amount to heal the character.
      */
     public void heal(int amount) {
-        if (hp + amount > MAX_HP) {
-            this.hp = MAX_HP;
+        if (hp + amount > maxHP) {
+            this.hp = maxHP;
         } else {
             this.hp += amount;
         }
@@ -191,18 +226,16 @@ public class Character {
     }
 
     /**
-     * Recharges the character's EP by a given amount, ensuring it does not exceed
-     * MAX_EP.
+     * Regenerates the character's EP by 5, to make sure that it does not exceed the maximum EP
+     * also called at the start of each round in battle.
      */
     public void recharge() {
-        if (ep + 5 > MAX_EP) {
-            this.ep = MAX_EP;
+        if (ep + 5 > maxEP) {
+            this.ep = maxEP;
         } else {
             this.ep += 5;
         }
-    }
-
-    /**
+    }    /**
      * Sets the character's defending status.
      * 
      * @param defending true if the character is defending, false otherwise.
@@ -230,14 +263,15 @@ public class Character {
     }
 
     /**
-     * Displays the character's details, including name, class, HP, EP, and
+     * Displays the character's details, including name, race, class, HP, EP, and
      * abilities.
      */
     public void displayCharacter() {
         System.out.println("\nName: " + name);
+        System.out.println("Race: " + race.getName());
         System.out.println("Class: " + characterClass);
-        System.out.println("HP: " + hp);
-        System.out.println("EP: " + ep);
+        System.out.println("HP: " + hp + "/" + maxHP);
+        System.out.println("EP: " + ep + "/" + maxEP);
         System.out.println("Abilities:");
         for (Ability ability : abilities) {
             System.out.println("- " + ability.getName() + ": " + ability.getDescription());
@@ -259,31 +293,31 @@ public class Character {
     }
 
     /**
-     * Resets the character's stats to their maximum values for the start of the
+     * Resets the character's stats to their maximum values (including race bonuses) for the start of the
      * battle.
      */
     public void resetStats() {
-        this.hp = MAX_HP;
-        this.ep = MAX_EP;
+        this.hp = maxHP;
+        this.ep = maxEP;
     }
 
     /**
      * Restores the character's HP or EP by a specified amount, ensuring it does not
-     * exceed the maximum values.
+     * exceed the maximum values (including race bonuses).
      * 
-     * @param type   The type of restoration ("HP" or "EP").
+     * @param type   The type of bonus the player will get 
      * @param amount The amount to restore.
      */
     public void restore(String type, int amount) {
         if ("HP".equalsIgnoreCase(type)) {
-            if (hp + amount > MAX_HP) {
-                this.hp = MAX_HP;
+            if (hp + amount > maxHP) {
+                this.hp = maxHP;
             } else {
                 this.hp += amount;
             }
         } else if ("EP".equalsIgnoreCase(type)) {
-            if (ep + amount > MAX_EP) {
-                this.ep = MAX_EP;
+            if (ep + amount > maxEP) {
+                this.ep = maxEP;
             } else {
                 this.ep += amount;
             }

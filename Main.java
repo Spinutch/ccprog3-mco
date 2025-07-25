@@ -107,10 +107,50 @@ public class Main {
                             }
                         } while (!uniqueName);
 
+                        // RACE SELECTION
+                        Race selectedRace = null;
+                        boolean checkRace = false;
+                        while (!checkRace) {
+                            System.out.println("\n---------------------------------------------------------");
+                            System.out.println("                 [RACE SELECTION]");
+                            System.out.println("---------------------------------------------------------");
+                            System.out.println("Choose a race for your character:");
+                            Race[] races = Race.show_race_array();
+                            for (int i = 0; i < races.length; i++) {
+                                Race race = races[i];
+                                System.out.printf("%d. %s - %s\n", i + 1, race.getName(), race.getDescription());
+                                String bonus = "";
+                                if (race.getHpBonus() > 0) {
+                                    bonus += "+" + race.getHpBonus() + " max HP";
+                                }
+                                if (race.getEpBonus() > 0) {
+                                    if (!bonus.isEmpty()) bonus += ", ";
+                                    bonus += "+" + race.getEpBonus() + " max EP";
+                                }
+                                if (race.hasExtraAbilitySlot()) { // for the gnome race // SPECIAL
+                                    if (!bonus.isEmpty()) bonus += ", ";
+                                    bonus += "+1 additional ability slot (choice from ANY class)";
+                                }
+                                System.out.println("   Bonus: " + bonus);
+                                System.out.println();
+                            }
+                            System.out.print("Choose your race (1-" + races.length + "): ");
+                            int raceChoice = getIntInput(sc);
+                            if (raceChoice >= 1 && raceChoice <= races.length) {
+                                selectedRace = races[raceChoice - 1];
+                                checkRace = true;
+                                System.out.println("\n[You have chosen: " + selectedRace.getName() + "]");
+                            } else {
+                                System.out.println("\n---------------------------------------------------------");
+                                System.out.println("      Invalid choice! Please choose 1-" + races.length + ".");
+                                System.out.println("---------------------------------------------------------");
+                            }
+                        }
+
                         String characterClass = "";
                         boolean checkClass = false;
                         while (!checkClass) {
-                            System.out.print("Choose a character class (Mage, Rogue, Warrior): ");
+                            System.out.print("\nChoose a character class (Mage, Rogue, Warrior): ");
                             characterClass = sc.nextLine().trim();
                             String classLower = characterClass.toLowerCase();
                             if (classLower.equals("mage") || classLower.equals("rogue")
@@ -125,47 +165,98 @@ public class Main {
                         }
 
                         ArrayList<Ability> availableAbilities = AllAbilities.getAbilitiesByClass(characterClass);
-
+                        int abilitySlots = selectedRace.hasExtraAbilitySlot() ? 4 : 3;
                         System.out.println("\n---------------------------------------------------------");
-                        System.out.println("Choose 3 abilities for your character:");
+                        if (selectedRace.hasExtraAbilitySlot()) {
+                            System.out.println("Choose 3 abilities from your class, and 1 from ANY class (Gnome bonus):");
+                        } else {
+                            System.out.println("Choose 3 abilities for your character:");
+                        }
                         for (int i = 0; i < availableAbilities.size(); i++) {
                             Ability ability = availableAbilities.get(i);
-                            System.out.printf("%d. %s (EP: %d) - %s\n", i + 1, ability.getName(), ability.getEpCost(),
-                                    ability.getDescription());
+                            System.out.printf("%d. %s (EP: %d) - %s\n", i + 1, ability.getName(), ability.getEpCost(), ability.getDescription());
                         }
                         System.out.println("---------------------------------------------------------");
                         setAbilities.clear();
-                        for (int i = 0; i < 3; i++) {
-                            boolean validChoice = false;
-                            System.out.println();
-                            String ctr = "";
-                            switch (i) {
-                                case 0:
-                                    ctr = "first";
-                                    break;
-                                case 1:
-                                    ctr = "second";
-                                    break;
-                                case 2:
-                                    ctr = "third";
-                                    break;
+                        // For Gnome: 3 from class and then 1 from any class
+                        if (selectedRace.hasExtraAbilitySlot()) {
+                            // Pick 3 classes first based on the class
+                            String[] numbering = {"first", "second", "third"};
+                            for (int i = 0; i < 3; i++) {
+                                boolean validChoice = false;
+                                System.out.println();
+                                String ctr = numbering[i];
+                                while (!validChoice) {
+                                    System.out.print("Choose your " + ctr + " ability: ");
+                                    int abilityChoice = getIntInput(sc);
+                                    if (abilityChoice >= 1 && abilityChoice <= availableAbilities.size()) {
+                                        Ability chosen = availableAbilities.get(abilityChoice - 1);
+                                        if (!setAbilities.contains(chosen)) {
+                                            setAbilities.add(chosen);
+                                            validChoice = true;
+                                        } else {
+                                            System.out.println("[You already picked that ability. Choose another.]");
+                                        }
+                                    } else {
+                                        System.out.println("\n---------------------------------------------------------");
+                                        System.out.println("          Invalid input! Please try again.");
+                                        System.out.println("---------------------------------------------------------\n");
+                                    }
+                                }
                             }
+                            // Pick 1 from any class // SPECIAL GNOME BONUS
+                            ArrayList<Ability> allAbilities = AllAbilities.getAllAbilities();
+                            System.out.println("\n[GNOME BONUS] Choose 1 additional ability from ANY class:");
+                            for (int i = 0; i < allAbilities.size(); i++) {
+                                Ability ability = allAbilities.get(i);
+                                System.out.printf("%d. %s (Class: %s, EP: %d) - %s\n", i + 1, ability.getName(), ability.getDescription().contains("arcane") ? "Mage" : ability.getDescription().contains("fury") ? "Warrior" : "Rogue", ability.getEpCost(), ability.getDescription());
+                            }
+                            boolean validChoice = false;
                             while (!validChoice) {
-                                System.out.print("Choose your " + ctr + " ability: ");
-                                int abilityChoice = getIntInput(sc);
-                                if (abilityChoice >= 1 && abilityChoice <= availableAbilities.size()) {
-                                    setAbilities.add(availableAbilities.get(abilityChoice - 1));
-                                    validChoice = true;
+                                System.out.print("Choose your bonus ability: ");
+                                int bonusChoice = getIntInput(sc);
+                                if (bonusChoice >= 1 && bonusChoice <= allAbilities.size()) {
+                                    Ability chosen = allAbilities.get(bonusChoice - 1);
+                                    if (!setAbilities.contains(chosen)) {
+                                        setAbilities.add(chosen);
+                                        validChoice = true;
+                                    } else {
+                                        System.out.println("[You already picked that ability. Choose another.]");
+                                    }
                                 } else {
                                     System.out.println("\n---------------------------------------------------------");
                                     System.out.println("          Invalid input! Please try again.");
                                     System.out.println("---------------------------------------------------------\n");
                                 }
                             }
+                        } else {
+                            // any race other than the gnome: pick 3 from class
+                            String[] numbering = {"first", "second", "third"};
+                            for (int i = 0; i < 3; i++) {
+                                boolean validChoice = false;
+                                System.out.println();
+                                String ctr = numbering[i];
+                                while (!validChoice) {
+                                    System.out.print("Choose your " + ctr + " ability: ");
+                                    int abilityChoice = getIntInput(sc);
+                                    if (abilityChoice >= 1 && abilityChoice <= availableAbilities.size()) {
+                                        Ability chosen = availableAbilities.get(abilityChoice - 1);
+                                        if (!setAbilities.contains(chosen)) {
+                                            setAbilities.add(chosen);
+                                            validChoice = true;
+                                        } else {
+                                            System.out.println("[You already picked that ability. Choose a different one.]");
+                                        }
+                                    } else {
+                                        System.out.println("\n---------------------------------------------------------");
+                                        System.out.println("          Invalid input! Please try again.");
+                                        System.out.println("---------------------------------------------------------\n");
+                                    }
+                                }
+                            }
                         }
 
-                        characters[totalCharacters] = new Character(name, characterClass,
-                                setAbilities.toArray(new Ability[0]));
+                        characters[totalCharacters] = new Character(name, selectedRace, characterClass, setAbilities.toArray(new Ability[0]));
                         totalCharacters++;
                         System.out.println("\n---------------------------------------------------------");
                         System.out.println("            Character created successfully!");

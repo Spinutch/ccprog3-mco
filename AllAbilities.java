@@ -88,4 +88,25 @@ public class AllAbilities {
 
                 return abilities;
         }
+
+        /**
+         * This method gets all abilities from all character classes.
+         * Used for Gnome's special ability to choose from any class.
+         *
+         * @return A list of all abilities from all classes
+         */
+        public static ArrayList<Ability> getAllAbilities() {
+                ArrayList<Ability> allAbilities = new ArrayList<>();
+                
+                // Add all Mage abilities
+                allAbilities.addAll(getAbilitiesByClass("Mage"));
+                
+                // Add all Rogue abilities
+                allAbilities.addAll(getAbilitiesByClass("Rogue"));
+                
+                // Add all Warrior abilities
+                allAbilities.addAll(getAbilitiesByClass("Warrior"));
+                
+                return allAbilities;
+        }
 }

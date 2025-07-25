@@ -187,7 +187,6 @@ public class Battle {
         System.out.println(
                 player1.getName() + " chose " + moveP1 + " while " + player2.getName() + " chose " + moveP2 + ".");
         System.out.println("\n                  [AFTER ROUND SUMMARY]");
-        // Align output just like in displayStats
         System.out.printf("      %-10s - HP: %-3d | EP: %-3d (EP spent: %d)\n",
                 player1.getName(), player1.getHP(), player1.getEP(), epSpentP1);
         System.out.printf("      %-10s - HP: %-3d | EP: %-3d (EP spent: %d)\n",
