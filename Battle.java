@@ -84,9 +84,7 @@ public class Battle {
                 
                 if (moveP1 >= 1 && moveP1 <= abilities1.length
                         && player1.getEP() < abilities1[moveP1 - 1].getEpCost()) {
-                    System.out.println(
-                            "
-[Sorry, you do not have enough EP to use the " + abilities1[moveP1 - 1].getName() + "]");
+                    System.out.println("[Sorry, you do not have enough EP to use the " + abilities1[moveP1 - 1].getName() + "]");
                     continue;
                 }
                 if (moveP1 == abilities1.length + 1 && player1.getEP() < 5) {
@@ -106,9 +104,7 @@ public class Battle {
                 
                 if (moveP2 >= 1 && moveP2 <= abilities2.length
                         && player2.getEP() < abilities2[moveP2 - 1].getEpCost()) {
-                    System.out.println(
-                            "
-[Sorry, you do not have enough EP to use the " + abilities2[moveP2 - 1].getName() + "]");
+                    System.out.println("[Sorry, you do not have enough EP to use the " + abilities2[moveP2 - 1].getName() + "]");
                     continue;
                 }
                 if (moveP2 == abilities2.length + 1 && player2.getEP() < 5) {
