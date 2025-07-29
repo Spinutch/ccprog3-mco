@@ -94,24 +94,24 @@ public class CharacterListView extends JFrame {
         sb.append("\nClick a character number to view details.");
         displayArea.setText(sb.toString());
 
-        // Optional: Add character selection logic via input dialog (basic simulation)
-        String input = JOptionPane.showInputDialog(this, "Enter character number:");
-        if (input != null) {
-            try {
-                int choice = Integer.parseInt(input);
-                if (choice >= 1 && choice <= characters.size()) {
-                    characterSelectListener.onCharacterSelected(characters.get(choice - 1));
-                }
-            } catch (NumberFormatException ignored) {}
-        }
+        // // Optional: Add character selection logic via input dialog (basic simulation)
+        // String input = JOptionPane.showInputDialog(this, "Enter character number:");
+        // if (input != null) {
+        //     try {
+        //         int choice = Integer.parseInt(input);
+        //         if (choice >= 1 && choice <= characters.size()) {
+        //             characterSelectListener.onCharacterSelected(characters.get(choice - 1));
+        //         }
+        //     } catch (NumberFormatException ignored) {}
+        // }
     }
 
-    public void addBackButtonListener(ActionListener l) {
-        back.addActionListener(l);
+    public void addBackButtonListener(ActionListener listener) {
+        back.addActionListener(listener);
     }
 
-    public void addCharacterSelectListener(CharacterSelectListener listener) {
-        this.characterSelectListener = listener;
+    public void addCharacterSelectListener(CharacterSelectListener characterSelectListener) {
+        this.characterSelectListener = characterSelectListener;
     }
 
     public interface CharacterSelectListener {
