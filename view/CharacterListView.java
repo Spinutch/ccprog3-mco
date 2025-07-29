@@ -11,9 +11,9 @@ import java.util.List;
 
 public class CharacterListView extends JFrame {
     private JLabel title;
-    private JTextArea displayArea;
     private JButton back;
     private JPanel mainPanel;
+    private JPanel characterButtonPanel;
 
     private CharacterSelectListener characterSelectListener;
 
@@ -27,9 +27,9 @@ public class CharacterListView extends JFrame {
         title = new JLabel("Character List", SwingConstants.CENTER);
         title.setFont(new Font("Serif", Font.BOLD, 24));
 
-        displayArea = new JTextArea();
-        displayArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
-        displayArea.setEditable(false);
+        // New panel to hold buttons
+        characterButtonPanel = new JPanel();
+        characterButtonPanel.setLayout(new GridLayout(0, 1, 10, 10));
 
         back = new JButton("Back");
         back.setBackground(new Color(138, 3, 3));
@@ -38,7 +38,7 @@ public class CharacterListView extends JFrame {
 
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(title, BorderLayout.NORTH);
-        mainPanel.add(new JScrollPane(displayArea), BorderLayout.CENTER);
+        mainPanel.add(new JScrollPane(characterButtonPanel), BorderLayout.CENTER);
 
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         bottomPanel.add(back);
@@ -55,10 +55,22 @@ public class CharacterListView extends JFrame {
     }
 
     public void showNoCharacters() {
-        displayArea.setText("Please create your characters first!");
+        characterButtonPanel.removeAll();
+
+        JLabel label = new JLabel("Please create your characters first!", SwingConstants.CENTER);
+        label.setFont(new Font("Serif", Font.BOLD, 27)); 
+        label.setHorizontalAlignment(SwingConstants.CENTER); 
+        label.setVerticalAlignment(SwingConstants.CENTER);
+
+        characterButtonPanel.setLayout(new BorderLayout()); 
+        characterButtonPanel.add(label, BorderLayout.CENTER);
+
+        characterButtonPanel.revalidate();
+        characterButtonPanel.repaint();
     }
 
     public void showCharacterDetails(Character character) {
+        // Show a pop-up with the details or you can forward to another view
         StringBuilder sb = new StringBuilder();
         sb.append("Name: ").append(character.getName()).append("\n");
         sb.append("Race: ").append(character.getRace()).append("\n");
@@ -77,22 +89,33 @@ public class CharacterListView extends JFrame {
         }
         sb.append("\nAbilities:\n");
         for (Ability ability : character.getAbilities()) {
-            sb.append("  - ").append(ability.toString()).append("\n"); 
+            sb.append("  - ").append(ability.toString()).append("\n");
         }
-        displayArea.setText(sb.toString());
+
+        JOptionPane.showMessageDialog(this, sb.toString(), "Character Details", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void showCharacterList(List<Character> characters) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("List of Characters:\n");
-        int index = 1;
-        for (Character c : characters) {
-            sb.append(index++).append(" - ").append(c.getName())
-              .append(" (").append(c.getCharacterClass()).append(")\n");
-        }
-        sb.append("\nClick a character number to view details.");
-        displayArea.setText(sb.toString());
+        characterButtonPanel.removeAll();
 
+        for (Character c : characters) {
+            JButton charButton = new JButton(c.getName() + " (" + c.getCharacterClass() + ")");
+            charButton.setFont(new Font("Serif", Font.PLAIN, 14));
+            charButton.setFocusPainted(false);
+            charButton.setBackground(new Color(138, 3, 3));
+            charButton.setForeground(Color.WHITE);
+
+            charButton.addActionListener(e -> {
+                if (characterSelectListener != null) {
+                    characterSelectListener.onCharacterSelected(c);
+                }
+            });
+
+            characterButtonPanel.add(charButton);
+        }
+
+        characterButtonPanel.revalidate();
+        characterButtonPanel.repaint();
     }
 
     public void addBackButtonListener(ActionListener listener) {
