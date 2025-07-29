@@ -38,6 +38,11 @@ public class GameModel {
         return player2Character;
     }
 
+    // overload method for creating a battle with two characters
+    public Battle createBattle(Character char1, Character char2) {
+         if (char1 == null || char2 == null) return null;
+         return new Battle(char1, char2);
+    }
     
     /**
      * Creates a new character with the specified parameters
