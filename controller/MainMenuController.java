@@ -2,7 +2,6 @@ package controller;
 
 import model.*;
 import view.*;
-import java.awt.*;
 import java.awt.event.*;
 
 public class MainMenuController {
@@ -18,7 +17,7 @@ public class MainMenuController {
 
     private void setUpListeners() {
         menu.addViewListener(new ViewListener());
-        // menu.addCreateListener(new CreateListener());
+        menu.addCreateListener(new CreateListener());
         // menu.addEditListener(new EditListener());
         // menu.addDeleteListener(new DeleteListener());
         // menu.addChooseListener(new ChooseListener());
@@ -34,15 +33,15 @@ public class MainMenuController {
         }
     }
 
-    // class CreateListener implements ActionListener {
-    //     @Override
-    //     public void actionPerformed(ActionEvent e) {
-    //         menu.setVisible(false);
-    //         CharacterCreationView creationView = new CharacterCreationView(menu);
-    //         new CharacterCreationController(creationView, menu);
-    //         creationView.setVisible(true);
-    //     }
-    // }
+    class CreateListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            menu.setVisible(false);
+            new CharacterNameInputView();
+            new CharacterCreationController(model, menu);
+
+        }
+    }
 
     // class EditListener implements ActionListener {
     //     @Override
