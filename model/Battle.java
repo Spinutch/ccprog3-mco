@@ -53,6 +53,20 @@ public class Battle {
         this.player2 = p2;
         this.scanner = sc;
     }
+
+    /**
+     * Constructs a new Battle object with the specified characters.
+     * Each character is reset to full HP and EP at the start of the battle.
+     *
+     * @param player1 the first character participating in the battle
+     * @param player2 the second character participating in the battle
+     */
+    public Battle(Character player1, Character player2) {
+        this.player1 = player1;
+        this.player2 = player2;
+    
+    }
+            
     /**
      * Starts the round-by-round battle between the two characters.
      * Handles move selection, ability execution, EP regeneration, and displays round summaries.
