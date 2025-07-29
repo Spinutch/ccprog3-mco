@@ -94,4 +94,9 @@ public class Ability {
     public String getRestoreType() {
         return restoreType;
     }
+
+    @Override
+    public String toString() {
+        return name + " " + "(" + epCost + " EP)" + " " + description;
+    }
 }
