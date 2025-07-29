@@ -11,12 +11,33 @@ public class GameModel {
     private List<model.Character> characters;
     private AllAbilities allAbilities;
     private AllMagicItems allMagicItems;
+    private Character player1Character;
+    private Character player2Character;
     
     public GameModel() {
         this.characters = new ArrayList<>();
         this.allAbilities = new AllAbilities();
         this.allMagicItems = new AllMagicItems();
     }
+
+    // Added methods to manage selected characters for battles
+
+    public void setPlayer1Character(Character character) {
+    this.player1Character = character;
+    }
+
+    public void setPlayer2Character(Character character) {
+        this.player2Character = character;
+    }
+
+    public Character getPlayer1Character() {
+        return player1Character;
+    }
+
+    public Character getPlayer2Character() {
+        return player2Character;
+    }
+
     
     /**
      * Creates a new character with the specified parameters
@@ -87,6 +108,11 @@ public class GameModel {
         }
         return false;
     }
+
+    //an overloaded method to delete a character by reference
+    public boolean deleteCharacter(Character character) {
+    return characters.remove(character);
+}
     
     /**
      * Gets all available races
