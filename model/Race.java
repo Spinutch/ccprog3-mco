@@ -91,6 +91,11 @@ public class Race {
         return hasExtraAbilitySlot;
     }
 
+    @Override
+    public String toString() {
+    return name;  
+    }
+
     /**
      * Returns a race by its name (case-insensitive).
      *
