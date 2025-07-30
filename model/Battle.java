@@ -66,7 +66,7 @@ public class Battle {
         this.player2 = player2;
     
     }
-            
+
     /**
      * Starts the round-by-round battle between the two characters.
      * Handles move selection, ability execution, EP regeneration, and displays round summaries.
@@ -434,6 +434,48 @@ public class Battle {
             }
         }
     }
+
+
+    /**
+     * Executes the selected move for the given character and returns a log of the action.
+     * 
+     * @param currentPlayer the character performing the move
+     * @param target the opposing character receiving the effect (if applicable)
+     * @param moveChoice the index of the move to be executed
+     * @param returnLog whether to return a log of the action
+     * @return a string log of the action performed
+     */
+    public static String executeMove(Character currentPlayer, Character target, int moveChoice, boolean returnLog) {
+    StringBuilder log = new StringBuilder();
+
+
+    // EP check and usage
+    Ability[] abilities = currentPlayer.getAbilities();
+    if (moveChoice < 0 || moveChoice >= abilities.length) {
+        log.append(currentPlayer.getName()).append(" made an invalid move.\n");
+        return log.toString();
+    }
+
+    Ability selectedMove = abilities[moveChoice];
+    currentPlayer.useEP(selectedMove.getEpCost());
+    log.append(currentPlayer.getName()).append(" used ").append(selectedMove.getName()).append("\n");
+
+    // Handle special abilities
+    if (selectedMove.getName().equalsIgnoreCase("Recharge")) {
+        currentPlayer.recharge();
+        log.append(currentPlayer.getName()).append(" recharged and regained 5 EP!\n");
+    } else if (selectedMove.getName().equalsIgnoreCase("Defend")) {
+        currentPlayer.setDefending(true);
+        log.append(currentPlayer.getName()).append(" is defending!\n");
+    } else {
+        currentPlayer.setDefending(false);
+        String damageLog = target.takeDamage(selectedMove.getDamage());
+        log.append(damageLog).append("\n");
+    }
+
+    return log.toString();
+}
+
 
     /**
      * Manages the magic items when in battle.
