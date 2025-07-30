@@ -114,7 +114,7 @@ public class Battle {
             while (true) {
                 moveP1 = displayAndPromptMove(player1);
                 Ability[] abilities1 = player1.getAbilities();
-                ArrayList<MagicItem> singleUseItems1 = getSingleUseItems(player1);
+                MagicItem equippedItem1 = player1.getEquippedItem();
                 
                 if (moveP1 >= 1 && moveP1 <= abilities1.length
                         && player1.getEP() < abilities1[moveP1 - 1].getEpCost()) {
@@ -125,8 +125,8 @@ public class Battle {
                     System.out.println("[Sorry, you do not have enough EP to use Defend]");
                     continue;
                 }
-                if (moveP1 == abilities1.length + 3 && singleUseItems1.isEmpty()) {
-                    System.out.println("[Sorry, you have no single-use magic items available]");
+                if (moveP1 == abilities1.length + 3 && (equippedItem1 == null || !equippedItem1.isSingleUse())) {
+                    System.out.println("[Sorry, you have no single-use magic item equipped]");
                     continue;
                 }
                 if (moveP1 == abilities1.length + 3) {
@@ -138,7 +138,7 @@ public class Battle {
             while (true) {
                 moveP2 = displayAndPromptMove(player2);
                 Ability[] abilities2 = player2.getAbilities();
-                ArrayList<MagicItem> singleUseItems2 = getSingleUseItems(player2);
+                MagicItem equippedItem2 = player2.getEquippedItem();
                 
                 if (moveP2 >= 1 && moveP2 <= abilities2.length
                         && player2.getEP() < abilities2[moveP2 - 1].getEpCost()) {
@@ -149,15 +149,36 @@ public class Battle {
                     System.out.println("[Sorry, you do not have enough EP to use Defend]");
                     continue;
                 }
-                if (moveP2 == abilities2.length + 3 && singleUseItems2.isEmpty()) {
-                    System.out.println("[Sorry, you have no single-use magic items available]");
+                if (moveP2 == abilities2.length + 3 && (equippedItem2 == null || !equippedItem2.isSingleUse())) {
+                    System.out.println("[Sorry, you have no single-use magic item equipped]");
                     continue;
                 }
                 if (moveP2 == abilities2.length + 3) {
-                    // Handle magic item selection immediately
                     handleMagicItemSelection(player2);
                 }
                 break;
+            }
+
+            int maxMoveP1;
+            if (player1.getEquippedItem() != null && player1.getEquippedItem().isSingleUse()) {
+                maxMoveP1 = player1.getAbilities().length + 3;
+            } else {
+                maxMoveP1 = player1.getAbilities().length + 2;
+            }
+            while (moveP1 < 1 || moveP1 > maxMoveP1) {
+                System.out.println("Invalid choice for " + player1.getName() + ". Please select a valid move:");
+                moveP1 = scanner.nextInt();
+            }
+
+            int maxMoveP2;
+            if (player2.getEquippedItem() != null && player2.getEquippedItem().isSingleUse()) {
+                maxMoveP2 = player2.getAbilities().length + 3;
+            } else {
+                maxMoveP2 = player2.getAbilities().length + 2;
+            }
+            while (moveP2 < 1 || moveP2 > maxMoveP2) {
+                System.out.println("Invalid choice for " + player2.getName() + ". Please select a valid move:");
+                moveP2 = scanner.nextInt();
             }
 
             boolean p1Defending = (moveP1 == player1.getAbilities().length + 1);
@@ -232,9 +253,9 @@ public class Battle {
         System.out.println((abilities.length + 1) + ". Defend (EP: 5) - Take half damage this round.");
         System.out.println((abilities.length + 2) + ". Recharge (EP: 0) - Do nothing and regain 5 EP.");
         
-        ArrayList<MagicItem> singleUseItems = getSingleUseItems(player);
-        if (!singleUseItems.isEmpty()) {
-            System.out.println((abilities.length + 3) + ". Use Magic Item (EP: 0) - Activate a single-use magic item.");
+        MagicItem equippedItem = player.getEquippedItem();
+        if (equippedItem != null && equippedItem.isSingleUse()) {
+            System.out.println((abilities.length + 3) + ". Use Magic Item (EP: 0) - Activate " + equippedItem.getName() + ".");
         }
         
         System.out.print("\n" + player.getName() + ", What would you like to do: ");
@@ -243,55 +264,19 @@ public class Battle {
     }
 
     /**
-     * Helper method to get single-use magic items from a character's inventory.
-     */
-    private ArrayList<MagicItem> getSingleUseItems(Character player) {
-        ArrayList<MagicItem> singleUseItems = new ArrayList<>();
-        for (MagicItem item : player.getInventory()) {
-            if (item.isSingleUse()) {
-                singleUseItems.add(item);
-            }
-        }
-        return singleUseItems;
-    }
-
-    /**
-     * Handles magic item selection immediately when a player chooses to use one.
+     * Handles magic item usage when a player chooses to use their equipped item.
      */
     private void handleMagicItemSelection(Character player) {
-        ArrayList<MagicItem> singleUseItems = getSingleUseItems(player);
+        MagicItem equippedItem = player.getEquippedItem();
         
-        if (singleUseItems.isEmpty()) {
+        if (equippedItem == null || !equippedItem.isSingleUse()) {
             return;
         }
         
-        System.out.println("\n[" + player.getName() + "'s Single-Use Magic Items]");
-        for (int i = 0; i < singleUseItems.size(); i++) {
-            MagicItem item = singleUseItems.get(i);
-            System.out.println((i + 1) + ". " + item.getName() + " - " + item.getEffect());
-        }
-        
-        System.out.print("\nChoose an item to use (0 to cancel): ");
-        int itemChoice = getIntInput(scanner);
-        
-        while (true) {
-            if (itemChoice == 0) {
-                System.out.println("[" + player.getName() + " decided not to use any magic item.]");
-                return;
-            }
-
-            if (itemChoice >= 1 && itemChoice <= singleUseItems.size()) {
-                MagicItem selectedItem = singleUseItems.get(itemChoice - 1);
-                player.useMagicItem(selectedItem);
-                player.getInventory().remove(selectedItem);
-                System.out.println("[" + player.getName() + " used " + selectedItem.getName() + "!]");
-                break;
-            } else {
-                System.out.println("[Invalid choice! Please try again.]");
-                System.out.print("\nChoose an item to use (0 to cancel): ");
-                itemChoice = getIntInput(scanner);
-            }
-        }
+        // Use the equipped single-use magic item
+        player.useMagicItem(equippedItem);
+        player.unequipItem(); // Unequip the used item
+        System.out.println("[" + player.getName() + " used " + equippedItem.getName() + "!]");
     }
 
     private void displayRoundOutcome(Character player1, Character player2, String moveP1, String moveP2, int epSpentP1,
@@ -430,46 +415,6 @@ public class Battle {
                 System.out.println("          Invalid move choice! Please try again.");
                 System.out.println("---------------------------------------------------------\n");
                 moveChoice = displayAndPromptMove(currentPlayer);
-            }
-        }
-    }
-
-    /**
-     * Manages the magic items when in battle.
-     */
-    private void useMagicItemInBattle(Character player) {
-        ArrayList<MagicItem> singleUseItems = getSingleUseItems(player);
-        
-        if (singleUseItems.isEmpty()) {
-            return;
-        }
-        
-        System.out.println("\n[" + player.getName() + "'s Single-Use Magic Items]");
-        for (int i = 0; i < singleUseItems.size(); i++) {
-            MagicItem item = singleUseItems.get(i);
-            System.out.println((i + 1) + ". " + item.getName() + " - " + item.getEffect());
-        }
-        
-        System.out.print("\nChoose an item to use (0 to cancel): ");
-        int itemChoice = getIntInput(scanner);
-        
-        while (true) {
-            if (itemChoice == 0) {
-                System.out.println("[" + player.getName() + " decided not to use any magic item.]");
-                return;
-            }
-
-            if (itemChoice >= 1 && itemChoice <= singleUseItems.size()) {
-                MagicItem selectedItem = singleUseItems.get(itemChoice - 1);
-                player.useMagicItem(selectedItem);
-                // Remove the used item from the player's inventory
-                player.getInventory().remove(selectedItem);
-                System.out.println("[" + player.getName() + " used " + selectedItem.getName() + "!]");
-                break;
-            } else {
-                System.out.println("[Invalid choice! Please try again.]");
-                System.out.print("\nChoose an item to use (0 to cancel): ");
-                itemChoice = getIntInput(scanner);
             }
         }
     }

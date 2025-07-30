@@ -215,7 +215,12 @@ public class Main {
                         }
 
                         ArrayList<Ability> availableAbilities = AllAbilities.getAbilitiesByClass(characterClass);
-                        int abilitySlots = selectedRace.hasExtraAbilitySlot() ? 4 : 3;
+                        int abilitySlots;
+                        if (selectedRace.hasExtraAbilitySlot()) {
+                            abilitySlots = 4;
+                        } else {
+                            abilitySlots = 3;
+                        }
                         System.out.println("\n---------------------------------------------------------");
                         if (selectedRace.hasExtraAbilitySlot()) {
                             System.out.println("Choose 3 abilities from your class, and 1 from ANY class (Gnome bonus):");
@@ -259,7 +264,7 @@ public class Main {
                             System.out.println("\n[GNOME BONUS] Choose 1 additional ability from ANY class:");
                             for (int i = 0; i < allAbilities.size(); i++) {
                                 Ability ability = allAbilities.get(i);
-                                System.out.printf("%d. %s (Class: %s, EP: %d) - %s\n", i + 1, ability.getName(), ability.getDescription().contains("arcane") ? "Mage" : ability.getDescription().contains("fury") ? "Warrior" : "Rogue", ability.getEpCost(), ability.getDescription());
+                                System.out.printf("%d. %s (EP: %d) - %s\n", i + 1, ability.getName(), ability.getEpCost(), ability.getDescription());
                             }
                             boolean validChoice = false;
                             while (!validChoice) {

@@ -48,20 +48,18 @@ public class Character {
         this.name = name;
         this.race = race;
         this.characterClass = characterClass;
-        // Calculate max HP and EP with race bonuses
         int baseMaxHP;
+        int baseMaxEP;
         if (race != null) {
             baseMaxHP = BASE_MAX_HP + race.getHpBonus();
         } else {
             baseMaxHP = BASE_MAX_HP;
         }
-        int baseMaxEP;
         if (race != null) {
             baseMaxEP = BASE_MAX_EP + race.getEpBonus();
         } else {
             baseMaxEP = BASE_MAX_EP;
         }
-        // Initialize current HP and EP to max values
         this.hp = this.maxHP = baseMaxHP;
         this.ep = this.maxEP = baseMaxEP;
         this.abilities = abilities;
@@ -261,7 +259,6 @@ public class Character {
             return false;
         }
 
-        // Apply the item's effects
         if (item.getHpRestore() > 0) {
             heal(item.getHpRestore());
             System.out.println(name + " restored " + item.getHpRestore() + " HP!");
@@ -275,7 +272,6 @@ public class Character {
             System.out.println(name + " is protected by a magical barrier!");
         }
 
-        // Remove the item from inventory after use
         removeItemFromInventory(item);
         return true;
     }
