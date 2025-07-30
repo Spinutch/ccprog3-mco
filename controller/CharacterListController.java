@@ -1,4 +1,3 @@
-// CharacterListController.java
 package controller;
 
 import model.GameModel;
@@ -15,18 +14,23 @@ public class CharacterListController {
     private CharacterListView view;
     private GameModel model;
     private JFrame previousFrame;
+    private boolean isPlayer1;
 
-    public CharacterListController(CharacterListView view, GameModel model, JFrame previousFrame) {
-        this.view = view;
+    public CharacterListController(CharacterListView view, GameModel model, JFrame previousFrame, boolean isPlayer1) {
         this.model = model;
+        this.view = view;
         this.previousFrame = previousFrame;
-
-        setupView();
+        this.isPlayer1 = isPlayer1;
         setupListeners();
+        setupView();
+       
     }
 
     private void setupView() {
-        List<Character> characters = model.getCharacters();
+
+    System.out.println("[DEBUG] Loading characters for Player " + (isPlayer1 ? "1" : "2"));
+
+        List<Character> characters = model.getCharactersForPlayer(isPlayer1 ? 1 : 2);
 
         if (characters.isEmpty()) {
             view.showNoCharacters();

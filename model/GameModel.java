@@ -8,17 +8,45 @@ import java.util.ArrayList;
  * This class manages character storage, validation, and game state.
  */
 public class GameModel {
-    private List<model.Character> characters;
+
+    private List<model.Character> player1Characters;
+    private List<model.Character> player2Characters;
+
+
     private AllAbilities allAbilities;
     private AllMagicItems allMagicItems;
     private Character player1Character;
     private Character player2Character;
     
     public GameModel() {
-        this.characters = new ArrayList<>();
+        this.player1Characters = new ArrayList<>();
+        this.player2Characters = new ArrayList<>();
         this.allAbilities = new AllAbilities();
         this.allMagicItems = new AllMagicItems();
     }
+
+    // getter to retrieve characters for a specific player
+    public List<model.Character> getCharactersForPlayer(int player) {
+        if (player == 1) {
+            return player1Characters;
+        } else {
+            return player2Characters;
+        }
+    }
+
+    public boolean createCharacterForPlayer(int player, Character character) {
+        List<model.Character> targetList = (player == 1) ? player1Characters : player2Characters;
+
+        for (Character c : targetList) {
+            if (c.getName().equals(character.getName())) {
+                return false; // Duplicate name
+            }
+        }
+
+        targetList.add(character);
+        return true;
+        
+    }   
 
     // Added methods to manage selected characters for battles
 
@@ -52,19 +80,22 @@ public class GameModel {
      * @param selectedAbilities list of selected abilities
      * @return true if character was created successfully
      */
-    public boolean createCharacter(String name, Race race, String characterClass, List<Ability> selectedAbilities) {
-        if (isNameTaken(name)) {
+    public boolean createCharacter(int player, String name, Race race, String characterClass, List<Ability> selectedAbilities) {
+        List<model.Character> characters = (player == 1) ? player1Characters : player2Characters;
+
+        if (isNameTaken(name, characters)) {
             return false;
         }
-        
+
         if (characters.size() >= 6) {
             return false;
         }
-        
+
         Ability[] abilitiesArray = selectedAbilities.toArray(new Ability[0]);
         model.Character newCharacter = new model.Character(name, race, characterClass, abilitiesArray);
         characters.add(newCharacter);
         return true;
+
     }
     
     /**
@@ -72,7 +103,7 @@ public class GameModel {
      * @param name the name to check
      * @return true if name is taken
      */
-    public boolean isNameTaken(String name) {
+    public boolean isNameTaken(String name, List<model.Character> characters) {
         for (model.Character character : characters) {
             if (character.getName().equalsIgnoreCase(name)) {
                 return true;
@@ -85,18 +116,27 @@ public class GameModel {
      * Gets all characters
      * @return list of characters
      */
-    public List<model.Character> getCharacters() {
-        return new ArrayList<>(characters);
-    }
+    // public List<model.Character> getCharacters(int player) {
+    //     // return player == 1 ? player1Characters : player2Characters;
+    //     System.out.println("getCharacters() currentPlayer = " + player);
+    //     if (player == 1) {
+    //     return new ArrayList<>(player1Characters);
+    //     } else {
+    //     return new ArrayList<>(player2Characters);
+    //     }
+        
+
+    // }
     
     /**
      * Gets a character by index
      * @param index the character index
      * @return the character at the index, or null if invalid
      */
-    public model.Character getCharacter(int index) {
-        if (index >= 0 && index < characters.size()) {
-            return characters.get(index);
+    public model.Character getCharacter(int player, int index) {
+        List<model.Character> target = player == 1 ? player1Characters : player2Characters;
+        if (index >= 0 && index < target.size()) {
+            return target.get(index);
         }
         return null;
     }
@@ -106,17 +146,19 @@ public class GameModel {
      * @param index the index of the character to delete
      * @return true if deletion was successful
      */
-    public boolean deleteCharacter(int index) {
-        if (index >= 0 && index < characters.size()) {
-            characters.remove(index);
+    public boolean deleteCharacter(int player, int index) {
+        List<model.Character> target = player == 1 ? player1Characters : player2Characters;
+        if (index >= 0 && index < target.size()) {
+            target.remove(index);
             return true;
         }
         return false;
     }
 
     //an overloaded method to delete a character by reference
-    public boolean deleteCharacter(Character character) {
-    return characters.remove(character);
+    public boolean deleteCharacter(int player, Character character) {
+        List<Character> target = (player == 1) ? player1Characters : player2Characters;
+        return target.remove(character);
 }
     
     /**
@@ -179,8 +221,8 @@ public class GameModel {
      * @return Battle instance, or null if invalid indices
      */
     public Battle createBattle(int char1Index, int char2Index) {
-        model.Character char1 = getCharacter(char1Index);
-        model.Character char2 = getCharacter(char2Index);
+        model.Character char1 = getCharacter(1, char1Index);
+        model.Character char2 = getCharacter(2, char2Index);
         
         if (char1 != null && char2 != null && char1 != char2) {
             return new Battle(char1, char2, null); // Scanner will be provided by controller
@@ -193,15 +235,18 @@ public class GameModel {
      * Checks if there are enough characters for battle
      * @return true if at least 2 characters exist
      */
-    public boolean canStartBattle() {
-        return characters.size() >= 2;
+    public boolean canStartBattle(int player) {
+        List<model.Character> target = (player == 1) ? player1Characters : player2Characters;
+        return target.size() >= 2;
     }
     
     /**
      * Gets the number of characters
      * @return number of characters
      */
-    public int getCharacterCount() {
-        return characters.size();
+    public int getCharacterCount(int player) {
+    List<model.Character> target = (player == 1) ? player1Characters : player2Characters;
+    return target.size();
     }
 }
+

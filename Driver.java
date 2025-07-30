@@ -5,10 +5,11 @@ import view.*;
 public class Driver {
     public static void main(String[] args) {
     javax.swing.SwingUtilities.invokeLater(() -> {
-        MainMenuView menu = new MainMenuView();
+        int player = 1;
+        MainMenuView view = new MainMenuView(player);
         GameModel model = new GameModel();
-        new MainMenuController(menu, model);
-        menu.setVisible(true);  
+        new MainMenuController(view, model, player);
+        view.setVisible(true);  
     }); 
 }
-}
+}   

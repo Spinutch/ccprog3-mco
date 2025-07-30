@@ -6,29 +6,32 @@ import java.awt.event.*;
 
 public class MainMenuController {
     
-    private MainMenuView menu;
+    private MainMenuView view;
     private GameModel model;
+    private int currentPlayer;   
 
-    public MainMenuController (MainMenuView menu, GameModel model) {
-        this.menu = menu;
-        this.model = model;
+    public MainMenuController (MainMenuView view, GameModel model, int currentPlayer) {
+        this.view = view;
+        this.model = model; 
+        this.currentPlayer = currentPlayer;
+        this.view.setCurrentPlayer(currentPlayer);
         setUpListeners();
     }  
 
     private void setUpListeners() {
-        menu.addViewListener(new ViewListener());
-        menu.addCreateListener(new CreateListener());
-        // menu.addEditListener(new EditListener());
-        // menu.addDeleteListener(new DeleteListener());
-        // menu.addChooseListener(new ChooseListener());
+        view.addViewListener(new ViewListener());
+        view.addCreateListener(new CreateListener());
+        // view.addEditListener(new EditListener());
+        view.addDeleteListener(new DeleteListener());
+        view.addChooseListener(new ChooseListener());
     }
  
     class ViewListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            menu.setVisible(false);
+            view.setVisible(false);
             CharacterListView listView = new CharacterListView();
-            new CharacterListController(listView,model,menu);
+            new CharacterListController(listView,model,view, currentPlayer == 1);
             listView.setVisible(true);
         }
     }
@@ -36,9 +39,9 @@ public class MainMenuController {
     class CreateListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            menu.setVisible(false);
+            view.setVisible(false);
             new CharacterNameInputView();
-            new CharacterCreationController(model, menu);
+            new CharacterCreationController(model, view, currentPlayer == 1);
 
         }
     }
@@ -46,30 +49,30 @@ public class MainMenuController {
     // class EditListener implements ActionListener {
     //     @Override
     //     public void actionPerformed(ActionEvent e) {
-    //         menu.setVisible(false);
-    //         CharacterEditView editView = new CharacterEditView(menu);
-    //         new CharacterListController(editView, menu);
+    //         view.setVisible(false);
+    //         CharacterEditView editView = new CharacterEditView(view);
+    //         new CharacterListController(editView, view);
     //         editView.setVisible(true);
     //     }
     // }
 
-    // class DeleteListener implements ActionListener {
-    //     @Override
-    //     public void actionPerformed(ActionEvent e) {
-    //         menu.setVisible(false);
-    //         CharacterDeletionView deleteView = new CharacterDeletionView(menu);
-    //         new CharacterDeletionController(deleteView, menu);
-    //         deleteView.setVisible(true);
-    //     }
-    // }
+    class DeleteListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            view.setVisible(false);
+            DeleteCharacterView deleteView = new DeleteCharacterView();
+            new CharacterDeletionController(deleteView, model, view, currentPlayer == 1);
+            deleteView.setVisible(true);
+        }
+    }
 
-    // class ChooseListener implements ActionListener {
-    //     @Override
-    //     public void actionPerformed(ActionEvent e) {
-    //         menu.setVisible(false);
-    //         CharacterSelectView chooseView = new CharacterSelectView(menu);
-    //         new CharacterSelectController(chooseView, menu);
-    //         chooseView.setVisible(true);
-    //     }
-    // }
+    class ChooseListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            view.setVisible(false);
+            CharacterSelectionView chooseView = new CharacterSelectionView();
+            new CharacterSelectionController(chooseView, model, view, currentPlayer == 1);
+            chooseView.setVisible(true);
+        }
+    }
 }

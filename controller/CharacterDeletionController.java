@@ -16,11 +16,14 @@ public class CharacterDeletionController {
     private GameModel model;
     private DeleteCharacterView view;
     private JFrame previousFrame;
+    private boolean isPlayer1;
 
-    public CharacterDeletionController(DeleteCharacterView view, GameModel model, JFrame previousFrame) {
+    public CharacterDeletionController(DeleteCharacterView view, GameModel model, JFrame previousFrame, boolean isPlayer1) {
         this.model = model;
         this.view = view;
+        this.isPlayer1 = isPlayer1;
         this.previousFrame = previousFrame;
+
 
         // view.addBackButtonListener(new BackButtonListener());
         setupListeners();
@@ -30,21 +33,14 @@ public class CharacterDeletionController {
     }
 
     private void updateCharacterList() {
-        List<Character> characters = model.getCharacters();
+
+        List<Character> characters = model.getCharactersForPlayer   (isPlayer1 ? 1 : 2);
         if (characters.isEmpty()) {
             view.showNoCharacters();
         } else {
             view.showCharacterList(characters);
         }
     }
-
-    // private class BackButtonListener implements ActionListener {
-    //     @Override
-    //     public void actionPerformed(ActionEvent e) {
-    //         view.setVisible(false);
-    //         backToMainMenu.run();
-    //     }
-    // }
 
     private void setupListeners() {
         view.addBackButtonListener(new ActionListener() {
@@ -60,7 +56,7 @@ public class CharacterDeletionController {
     private class DeleteListener implements DeleteCharacterView.DeleteCharacterListener {
         @Override
         public void onCharacterDelete(Character character) {
-            model.deleteCharacter(character);
+            model.deleteCharacter(isPlayer1 ? 1 : 2,character);
             updateCharacterList();
         }
     }

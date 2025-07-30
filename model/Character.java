@@ -379,28 +379,30 @@ public class Character {
      * 
      * @param damage The amount of damage to be taken by the character.
      */
-    public void takeDamage(int damage) {
-        if (isShielded) {
-            System.out.println(name + " is shielded and takes no damage!");
-            return;
-        }
-        if (isEvading) {
-            if (Math.random() < 0.5) {
-                System.out.println(name + " evaded the attack!");
-                return;
-            } else {
-                System.out.println(name + " tried to evade but failed!");
-            }
-        }
-        if (isDefending) {
-            damage /= 2;
-        }
-        if (hp - damage < 0) {
-            hp = 0;
+    public String takeDamage(int damage) {
+    if (isShielded) {
+        return name + " is shielded and takes no damage!";
+    }
+    if (isEvading) {
+        if (Math.random() < 0.5) {
+            return name + " evaded the attack!";
         } else {
-            hp -= damage;
+            // continue to damage
         }
     }
+    if (isDefending) {
+        damage /= 2;
+    }
+
+    if (hp - damage < 0) {
+        hp = 0;
+    } else {
+        hp -= damage;
+    }
+
+    return name + " takes " + damage + " damage!";
+}
+
 
     /**
      * Uses a specified amount of EP, ensuring it does not go below zero.

@@ -4,29 +4,31 @@ import model.Character;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionListener;
 import java.util.List;
 
-public class CharacterSelectionView extends JFrame {
-    private JPanel characterButtonPanel;
-    private JPanel mainPanel;
-    private CharacterSelectionListener listener;
+public class EditCharacterView extends JFrame {
     private JLabel title;
+    private JPanel characterButtonPanel;
     private JButton back;
+    private JPanel mainPanel;
 
-    public CharacterSelectionView() {
-        super("Choose a Character for Battle");
+    private EditCharacterListener editCharacterListener;
+
+    public EditCharacterView() {
+        super("Edit Character");
         initComponents();
         setFrame();
     }
 
-    public void initComponents() {
-        title = new JLabel("Character List", SwingConstants.CENTER);
+    private void initComponents() {
+        title = new JLabel("Edit Character", SwingConstants.CENTER);
         title.setFont(new Font("Serif", Font.BOLD, 24));
 
-        // New panel to hold buttons
         characterButtonPanel = new JPanel();
         characterButtonPanel.setLayout(new GridLayout(0, 1, 10, 10));
+
+        JScrollPane scrollPane = new JScrollPane(characterButtonPanel);
 
         back = new JButton("Back");
         back.setBackground(new Color(138, 3, 3));
@@ -35,7 +37,7 @@ public class CharacterSelectionView extends JFrame {
 
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(title, BorderLayout.NORTH);
-        mainPanel.add(new JScrollPane(characterButtonPanel), BorderLayout.CENTER);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
 
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         bottomPanel.add(back);
@@ -44,7 +46,7 @@ public class CharacterSelectionView extends JFrame {
         add(mainPanel);
     }
 
-    public void setFrame() {
+    private void setFrame() {
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -53,38 +55,38 @@ public class CharacterSelectionView extends JFrame {
 
     public void showNoCharacters() {
         characterButtonPanel.removeAll();
-
         JLabel label = new JLabel("Please create your characters first!", SwingConstants.CENTER);
         label.setFont(new Font("Serif", Font.BOLD, 27)); 
         label.setHorizontalAlignment(SwingConstants.CENTER); 
         label.setVerticalAlignment(SwingConstants.CENTER);
-
         characterButtonPanel.setLayout(new BorderLayout()); 
         characterButtonPanel.add(label, BorderLayout.CENTER);
 
+        characterButtonPanel.add(label);
         characterButtonPanel.revalidate();
         characterButtonPanel.repaint();
     }
-    
+
     public void showCharacterList(List<Character> characters) {
         characterButtonPanel.removeAll();
-
-        for (Character c : characters) {
-            JButton charButton = new JButton(c.getName() + " (" + c.getCharacterClass() + ")");
-            charButton.setFont(new Font("Serif", Font.PLAIN, 14));
-            charButton.setFocusPainted(false);
-            charButton.setBackground(new Color(138, 3, 3));
-            charButton.setForeground(Color.WHITE);
-
-            charButton.addActionListener(e -> {
-                    if (listener != null) {
-                        listener.onCharacterSelected(c);
-                    }
-                });
-
-            characterButtonPanel.add(charButton);
+        for (Character character : characters) {
+            JButton characterButton = new JButton(character.getName() + " (" + character.getCharacterClass() + ")");
+            characterButton.setFont(new Font("Serif", Font.PLAIN, 14));
+            characterButton.setBackground(new Color(138, 3, 3));
+            characterButton.setForeground(Color.WHITE);
+            characterButton.addActionListener(e -> {
+                int confirm = JOptionPane.showConfirmDialog(
+                        this,
+                        "You want to edit " + character.getName() + "?",
+                        "Confirm Deletion",
+                        JOptionPane.YES_NO_OPTION
+                );
+                if (confirm == JOptionPane.YES_OPTION && editCharacterListener != null) {
+                    editCharacterListener.onCharacterEdit(character);
+                }
+            });
+            characterButtonPanel.add(characterButton);
         }
-
         characterButtonPanel.revalidate();
         characterButtonPanel.repaint();
     }
@@ -93,11 +95,11 @@ public class CharacterSelectionView extends JFrame {
         back.addActionListener(listener);
     }
 
-    public void addCharacterSelectionListener(CharacterSelectionListener listener) {
-        this.listener = listener;
+    public void addEditCharacterListener(EditCharacterListener listener) {
+        this.editCharacterListener = listener;
     }
 
-    public interface CharacterSelectionListener {
-        void onCharacterSelected(Character selectedCharacter);
+    public interface EditCharacterListener {
+        void onCharacterEdit(Character character);
     }
 }

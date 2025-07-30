@@ -18,17 +18,18 @@ public class CharacterSelectionController {
     private boolean isPlayer1;
 
     public CharacterSelectionController(CharacterSelectionView view, GameModel model, JFrame previousFrame, boolean isPlayer1) {
-        this.view = view;
         this.model = model;
+        this.view = view;
         this.previousFrame = previousFrame;
         this.isPlayer1 = isPlayer1;
-
-        setupView();
         setupListeners();
+        setupView();
+        
+        
     }
 
     private void setupView() {
-        List<Character> characters = model.getCharacters();
+        List<Character> characters = model.getCharactersForPlayer(isPlayer1 ? 1 : 2);
 
         if (characters.isEmpty()) {
             view.showNoCharacters();
@@ -63,7 +64,7 @@ public class CharacterSelectionController {
 
                     // Proceed to Battle
                     view.dispose();
-                    model.createBattle(model.getPlayer1Character(), model.getPlayer2Character());
+                    new BattleController(model);
                 }
             }
         });

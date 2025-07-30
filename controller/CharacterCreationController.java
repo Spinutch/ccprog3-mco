@@ -22,14 +22,17 @@ public class CharacterCreationController {
     private Race selectedRace;
     private String selectedClass;
     private List<Ability> selectedAbilities = new ArrayList<>();
+    private boolean isPlayer1; 
 
-    public CharacterCreationController(GameModel model, JFrame previousFrame) {
+    public CharacterCreationController(GameModel model, JFrame previousFrame, boolean isPlayer1) {
         this.model = model;
         this.previousFrame = previousFrame;
+        this.isPlayer1 = isPlayer1;
         showNameInputView();
     }
 
     private void showNameInputView() {
+        List<model.Character> currentList = model.getCharactersForPlayer(isPlayer1 ? 1 : 2);
         nameInputView = new CharacterNameInputView();
         nameInputView.setVisible(true);
         
@@ -40,7 +43,7 @@ public class CharacterCreationController {
                 JOptionPane.showMessageDialog(nameInputView, "Name cannot be empty.");
                 return;
             }
-            if (model.isNameTaken(name)) {
+            if (model.isNameTaken(name, currentList )) {
                 JOptionPane.showMessageDialog(nameInputView, "Name already exists.");
                 return;
             }
@@ -98,7 +101,7 @@ public class CharacterCreationController {
     }
 
     private void createCharacter() {
-    boolean success = model.createCharacter(characterName, selectedRace, selectedClass, selectedAbilities);
+    boolean success = model.createCharacter(isPlayer1 ? 1 : 2 ,characterName, selectedRace, selectedClass, selectedAbilities);
     if (!success) {
         JOptionPane.showMessageDialog(abilitySelectionView, "Character creation failed. Name might be taken or limit reached.");
     }

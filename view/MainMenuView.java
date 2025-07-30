@@ -17,17 +17,22 @@ public class MainMenuView extends JFrame {
     private JButton delete;
     private JButton choose;
 
-    public MainMenuView() {
+    public MainMenuView(int player) {
         super("Fatal Fantasy");
         initComponents();
+        setCurrentPlayer(player);
         setFrame();
+    }
+
+    public void setCurrentPlayer(int player) {
+        prompt.setText("Player " + player + ", manage your characters...");
     }
 
     private void initComponents() {
         // labels
         title = new JLabel("FATAL FANTASY : TACTICS", SwingConstants.CENTER);
         subtitle = new JLabel("Welcome to", SwingConstants.CENTER);
-        prompt = new JLabel("Player 1, manage your characters...", SwingConstants.CENTER);
+        prompt = new JLabel("", SwingConstants.CENTER);
 
         title.setFont(new Font("Serif", Font.BOLD, 32));
         subtitle.setFont(new Font("Serif", Font.PLAIN, 20));

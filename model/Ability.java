@@ -97,6 +97,14 @@ public class Ability {
 
     @Override
     public String toString() {
-        return name + " " + "(" + epCost + " EP)" + " " + description;
+        return name + " (" + epCost + " EP): " + description +
+                (restore > 0 ? " | Restores: " + restore + " " + restoreType : "") +
+                (isSpecialAbility ? " | Special Ability" : "");
     }
+
+    public void use(Character user, Character target) {
+    // Example logic: default implementation (you can override in subclasses if needed)
+    target.useEP(target.getHP() - this.damage);  // assuming getHp/setHp exist
+    user.useEP(user.getEP() - this.epCost);      // assuming EP is consumed
+}
 }
