@@ -1,80 +1,102 @@
 package view;
 
 import model.Ability;
-import model.AllAbilities;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AbilitySelectionView extends JFrame {
-    private JLabel titleLabel;
-    private JPanel abilitiesPanel;
+    private JPanel mainPanel;
+    private JPanel abilityPanel;
+    private List<JCheckBox> abilityCheckboxes;
     private JButton confirmButton;
+    private JButton backButton;
+    private List<Ability> currentAbilities;
 
-    private JCheckBox[] abilityCheckBoxes;
-
-    public AbilitySelectionView(String selectedClass) {
-        super("Select Abilities");
-        initComponents(selectedClass);
+    public AbilitySelectionView(String characterClass) {
+        super("Select Abilities - " + characterClass);
+        this.abilityCheckboxes = new ArrayList<>();
+        initComponents();
         setFrame();
     }
 
-    private void initComponents(String selectedClass) {
-        titleLabel = new JLabel("Choose 3 Abilities for your class: " + selectedClass, SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Serif", Font.BOLD, 22));
+    private void initComponents() {
+        mainPanel = new JPanel(new BorderLayout(10, 10));
 
-        List<Ability> abilities = AllAbilities.getAbilitiesByClass(selectedClass);
-        abilityCheckBoxes = new JCheckBox[abilities.size()];
+        // Title
+        JLabel titleLabel = new JLabel("Select Abilities", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Serif", Font.BOLD, 24));
+        mainPanel.add(titleLabel, BorderLayout.NORTH);
 
-        abilitiesPanel = new JPanel();
-        abilitiesPanel.setLayout(new GridLayout(abilities.size(), 1, 5, 5));
+        // Ability selection panel
+        abilityPanel = new JPanel();
+        abilityPanel.setLayout(new BoxLayout(abilityPanel, BoxLayout.Y_AXIS));
+        JScrollPane scrollPane = new JScrollPane(abilityPanel);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
 
-        for (int i = 0; i < abilities.size(); i++) {
-            Ability ability = abilities.get(i);
-            String label = ability.getName() + " - " + ability.getDescription() + " (EP: " + ability.getEpCost() + ")";
-            abilityCheckBoxes[i] = new JCheckBox("  " + label);
-            abilityCheckBoxes[i].setFont(new Font("Serif", Font.PLAIN, 14));
-            abilitiesPanel.add(abilityCheckBoxes[i]);
-        }
+        // Button panel
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
-        confirmButton = new JButton("Confirm");
+        confirmButton = new JButton("Confirm Selection");
         confirmButton.setBackground(new Color(138, 3, 3));
         confirmButton.setForeground(Color.WHITE);
-        confirmButton.setFont(new Font("Serif", Font.BOLD, 16));
-    }
+        confirmButton.setFont(new Font("Serif", Font.PLAIN, 14));
 
-    private void setFrame() {
-        JPanel mainPanel = new JPanel(new BorderLayout(15, 15));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        mainPanel.add(titleLabel, BorderLayout.NORTH);
-        mainPanel.add(new JScrollPane(abilitiesPanel), BorderLayout.CENTER);
+        backButton = new JButton("Back");
+        backButton.setBackground(new Color(138, 3, 3));
+        backButton.setForeground(Color.WHITE);
+        backButton.setFont(new Font("Serif", Font.PLAIN, 14));
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.add(confirmButton);
+        buttonPanel.add(backButton);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         add(mainPanel);
+    }
 
-        setSize(600, 400);
+    private void setFrame() {
+        setSize(400, 500);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setResizable(false);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+    public void setCurrentAbilities(List<Ability> abilities) {
+        this.currentAbilities = abilities;
+        updateAbilityCheckboxes();
+    }
+
+    private void updateAbilityCheckboxes() {
+        abilityPanel.removeAll();
+        abilityCheckboxes.clear();
+
+        for (Ability ability : currentAbilities) {
+            JCheckBox checkbox = new JCheckBox(ability.getName());
+            checkbox.setFont(new Font("Serif", Font.PLAIN, 14));
+            abilityCheckboxes.add(checkbox);
+            abilityPanel.add(checkbox);
+        }
+
+        abilityPanel.revalidate();
+        abilityPanel.repaint();
+    }
+
+    public List<Ability> getSelectedAbilities() {
+        List<Ability> selectedAbilities = new ArrayList<>();
+        for (int i = 0; i < abilityCheckboxes.size(); i++) {
+            if (abilityCheckboxes.get(i).isSelected()) {
+                selectedAbilities.add(currentAbilities.get(i));
+            }
+        }
+        return selectedAbilities;
     }
 
     public void addConfirmButtonListener(ActionListener listener) {
         confirmButton.addActionListener(listener);
     }
 
-    public List<Ability> getSelectedAbilities(String selectedClass) {
-        List<Ability> available = AllAbilities.getAbilitiesByClass(selectedClass);
-        java.util.List<Ability> selected = new java.util.ArrayList<>();
-        for (int i = 0; i < abilityCheckBoxes.length; i++) {
-            if (abilityCheckBoxes[i].isSelected()) {
-                selected.add(available.get(i));
-            }
-        }
-        return selected;
+    public void addBackButtonListener(ActionListener listener) {
+        backButton.addActionListener(listener);
     }
 }

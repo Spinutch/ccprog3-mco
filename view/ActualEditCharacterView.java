@@ -14,7 +14,7 @@ public class ActualEditCharacterView extends JFrame {
     private JButton EditAbilitiesButton;
 
     public ActualEditCharacterView() {
-        super("Actual Edit Character");
+        super("Edit Character");
         initComponents();
         setFrame();
     }
@@ -23,29 +23,27 @@ public class ActualEditCharacterView extends JFrame {
         title = new JLabel("Edit Chosen Character", SwingConstants.CENTER);
         title.setFont(new Font("Serif", Font.BOLD, 26));
 
-        finishButton = new JButton("Finish Editing");
+        finishButton = new JButton("Finish Editing"); // Changed text
         detailsButton = new JButton("View Details");
         ManageButton = new JButton("Manage Equipment");
         EditAbilitiesButton = new JButton("Edit Abilities");
 
-        finishButton.setMargin(new Insets(20, 20, 20, 20));
+        finishButton.setBackground(new Color(138, 3, 3));
+        finishButton.setForeground(Color.WHITE);
+        finishButton.setFont(new Font("Serif", Font.PLAIN, 12));
         detailsButton.setMargin(new Insets(20, 20, 20, 20));
         ManageButton.setMargin(new Insets(20, 20, 20, 20));
         EditAbilitiesButton.setMargin(new Insets(20, 20, 20, 20));
 
-        finishButton.setBackground(new Color(138, 3, 3));
         detailsButton.setBackground(new Color(138, 3, 3));
         ManageButton.setBackground(new Color(138, 3, 3));
         EditAbilitiesButton.setBackground(new Color(138, 3, 3));
-        finishButton.setForeground(Color.WHITE);
         detailsButton.setForeground(Color.WHITE);
         ManageButton.setForeground(Color.WHITE);
         EditAbilitiesButton.setForeground(Color.WHITE);
-        finishButton.setFont(new Font("Serif", Font.BOLD, 16));
         detailsButton.setFont(new Font("Serif", Font.BOLD, 16));
         ManageButton.setFont(new Font("Serif", Font.BOLD, 16));
         EditAbilitiesButton.setFont(new Font("Serif", Font.BOLD, 16));
-        finishButton.setMargin(new Insets(20, 20, 20, 20));
         detailsButton.setMargin(new Insets(20, 20, 20, 20));
         ManageButton.setMargin(new Insets(20, 20, 20, 20));
         EditAbilitiesButton.setMargin(new Insets(20, 20, 20, 20));

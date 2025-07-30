@@ -1,10 +1,39 @@
 package model;
-
 import java.util.*;
 
 /**
- * Battle handles turn-based combat between two characters
- * Manages move selection, damage calculation, and determines the winner
+ * The Battle class handles the core logic for executing a turn-based battle
+ * between two Character objects. It manages t            // 7. Display the round's outcome (e.g., damage dealt, health changes, EP spent)
+
+            if (moveP1 == player1.getAbilities().length + 1) {
+                moveNameP1 = "Defend";
+            } else if (moveP1 == player1.getAbilities().length + 2) {
+                moveNameP1 = "Recharge";
+            } else if (moveP1 == player1.getAbilities().length + 3) {
+                moveNameP1 = "Use Magic Item";
+            } else {
+                moveNameP1 = player1.getAbilities()[moveP1 - 1].getName();
+            }
+
+            if (moveP2 == player2.getAbilities().length + 1) {
+                moveNameP2 = "Defend";
+            } else if (moveP2 == player2.getAbilities().length + 2) {
+                moveNameP2 = "Recharge";
+            } else if (moveP2 == player2.getAbilities().length + 3) {
+                moveNameP2 = "Use Magic Item";
+            } else {
+                moveNameP2 = player2.getAbilities()[moveP2 - 1].getName();
+            }ion,
+ * move selection, energy and health updates, and determines the winner.
+ * 
+ * This class adheres to the game flow described in the MCO1 specifications.
+ *
+ * Battle Flow:
+ *   - Initialize with two Character objects
+ *   - Regenerate EP at the start of each round
+ *   - Display move options, prompt for input, and execute abilities
+ *   - Display outcome and check for a winner after each round
+ * 
  */
 
 public class Battle {
@@ -13,11 +42,11 @@ public class Battle {
     private Scanner scanner;
 
     /**
-     * Constructs a battle with two characters and scanner
-     * 
-     * @param p1 first character
-     * @param p2 second character
-     * @param sc scanner for input
+     * Constructs a new Battle object with the specified characters.
+     * Each character is reset to full HP and EP at the start of the battle.
+     *
+     * @param p1 the first character participating in the battle
+     * @param p2 the second character participating in the battle
      */
     public Battle(Character p1, Character p2, Scanner sc) {
         this.player1 = p1;
@@ -26,20 +55,21 @@ public class Battle {
     }
 
     /**
-     * Constructs a battle with two characters
-     * 
-     * @param player1 first character
-     * @param player2 second character
+     * Constructs a new Battle object with the specified characters.
+     * Each character is reset to full HP and EP at the start of the battle.
+     *
+     * @param player1 the first character participating in the battle
+     * @param player2 the second character participating in the battle
      */
     public Battle(Character player1, Character player2) {
         this.player1 = player1;
         this.player2 = player2;
-
+    
     }
 
     /**
-     * Starts the battle between two characters
-     * Handles rounds, move selection, and determines winner
+     * Starts the round-by-round battle between the two characters.
+     * Handles move selection, ability execution, EP regeneration, and displays round summaries.
      */
     public void startBattle() {
         int round = 1;
@@ -65,11 +95,10 @@ public class Battle {
             player1.setShielded(false);
             player2.setShielded(false);
 
-            // 1. At the start of each round, both characters regenerate +5 EP (capped at
-            // max)
+            // 1. At the start of each round, both characters regenerate +5 EP (capped at max)
             player1.recharge();
             player2.recharge();
-
+            
             // Apply passive effects from equipped magic items
             player1.applyPassiveEffects();
             player2.applyPassiveEffects();
@@ -87,11 +116,10 @@ public class Battle {
                 moveP1 = displayAndPromptMove(player1);
                 Ability[] abilities1 = player1.getAbilities();
                 ArrayList<MagicItem> singleUseItems1 = getSingleUseItems(player1);
-
+                
                 if (moveP1 >= 1 && moveP1 <= abilities1.length
                         && player1.getEP() < abilities1[moveP1 - 1].getEpCost()) {
-                    System.out.println(
-                            "[Sorry, you do not have enough EP to use the " + abilities1[moveP1 - 1].getName() + "]");
+                    System.out.println("[Sorry, you do not have enough EP to use the " + abilities1[moveP1 - 1].getName() + "]");
                     continue;
                 }
                 if (moveP1 == abilities1.length + 1 && player1.getEP() < 5) {
@@ -112,11 +140,10 @@ public class Battle {
                 moveP2 = displayAndPromptMove(player2);
                 Ability[] abilities2 = player2.getAbilities();
                 ArrayList<MagicItem> singleUseItems2 = getSingleUseItems(player2);
-
+                
                 if (moveP2 >= 1 && moveP2 <= abilities2.length
                         && player2.getEP() < abilities2[moveP2 - 1].getEpCost()) {
-                    System.out.println(
-                            "[Sorry, you do not have enough EP to use the " + abilities2[moveP2 - 1].getName() + "]");
+                    System.out.println("[Sorry, you do not have enough EP to use the " + abilities2[moveP2 - 1].getName() + "]");
                     continue;
                 }
                 if (moveP2 == abilities2.length + 1 && player2.getEP() < 5) {
@@ -205,12 +232,12 @@ public class Battle {
         }
         System.out.println((abilities.length + 1) + ". Defend (EP: 5) - Take half damage this round.");
         System.out.println((abilities.length + 2) + ". Recharge (EP: 0) - Do nothing and regain 5 EP.");
-
+        
         ArrayList<MagicItem> singleUseItems = getSingleUseItems(player);
         if (!singleUseItems.isEmpty()) {
             System.out.println((abilities.length + 3) + ". Use Magic Item (EP: 0) - Activate a single-use magic item.");
         }
-
+        
         System.out.print("\n" + player.getName() + ", What would you like to do: ");
         int moveChoice = getIntInput(scanner);
         return moveChoice;
@@ -234,20 +261,20 @@ public class Battle {
      */
     private void handleMagicItemSelection(Character player) {
         ArrayList<MagicItem> singleUseItems = getSingleUseItems(player);
-
+        
         if (singleUseItems.isEmpty()) {
             return;
         }
-
+        
         System.out.println("\n[" + player.getName() + "'s Single-Use Magic Items]");
         for (int i = 0; i < singleUseItems.size(); i++) {
             MagicItem item = singleUseItems.get(i);
             System.out.println((i + 1) + ". " + item.getName() + " - " + item.getEffect());
         }
-
+        
         System.out.print("\nChoose an item to use (0 to cancel): ");
         int itemChoice = getIntInput(scanner);
-
+        
         while (true) {
             if (itemChoice == 0) {
                 System.out.println("[" + player.getName() + " decided not to use any magic item.]");
@@ -292,11 +319,10 @@ public class Battle {
     }
 
     /**
-     * Determines and prints the result of the battle based on the remaining HP of
-     * both players.
+     * Determines and prints the result of the battle based on the remaining HP of both players.
      * 
-     * - If both players have 0 or less HP, the result is a draw.
-     * - If only one player has HP above 0, that player is declared the winner.
+     *   - If both players have 0 or less HP, the result is a draw.
+     *   - If only one player has HP above 0, that player is declared the winner.
      */
     private void declareWinner() {
         System.out.println("\n---------------------------------------------------------");
@@ -315,15 +341,14 @@ public class Battle {
     /**
      * Executes the selected move for the given character. This includes:
      * 
-     * - Reducing EP based on the selected ability’s cost.
-     * - Applying healing, shielding, or damage depending on the ability type.
-     * - Handling special move effects such as defending or recharging.
+     *   - Reducing EP based on the selected ability’s cost.
+     *   - Applying healing, shielding, or damage depending on the ability type.
+     *   - Handling special move effects such as defending or recharging.
      * 
      *
      * @param currentPlayer the character performing the move
-     * @param target        the opposing character receiving the effect (if
-     *                      applicable)
-     * @param moveChoice    the name of the move to be executed
+     * @param target the opposing character receiving the effect (if applicable)
+     * @param moveChoice the name of the move to be executed
      * 
      */
 
@@ -332,7 +357,7 @@ public class Battle {
         int numAbilities = abilities.length;
         boolean moveExecuted = false;
 
-        // Set flags for special abilities or defend
+        // Set flags for special abilities or defend    
         setFlagsBeforeAttacks(currentPlayer, moveChoice);
 
         while (!moveExecuted) {
@@ -410,66 +435,67 @@ public class Battle {
         }
     }
 
+
     /**
-     * Executes the selected move for the given character and returns a log of the
-     * action.
+     * Executes the selected move for the given character and returns a log of the action.
      * 
      * @param currentPlayer the character performing the move
-     * @param target        the opposing character receiving the effect (if
-     *                      applicable)
-     * @param moveChoice    the index of the move to be executed
-     * @param returnLog     whether to return a log of the action
+     * @param target the opposing character receiving the effect (if applicable)
+     * @param moveChoice the index of the move to be executed
+     * @param returnLog whether to return a log of the action
      * @return a string log of the action performed
      */
     public static String executeMove(Character currentPlayer, Character target, int moveChoice, boolean returnLog) {
-        StringBuilder log = new StringBuilder();
+    StringBuilder log = new StringBuilder();
 
-        // EP check and usage
-        Ability[] abilities = currentPlayer.getAbilities();
-        if (moveChoice < 0 || moveChoice >= abilities.length) {
-            log.append(currentPlayer.getName()).append(" made an invalid move.\n");
-            return log.toString();
-        }
 
-        Ability selectedMove = abilities[moveChoice];
-        currentPlayer.useEP(selectedMove.getEpCost());
-        log.append(currentPlayer.getName()).append(" used ").append(selectedMove.getName()).append("\n");
-
-        // Handle special abilities
-        if (selectedMove.getName().equalsIgnoreCase("Recharge")) {
-            currentPlayer.recharge();
-            log.append(currentPlayer.getName()).append(" recharged and regained 5 EP!\n");
-        } else if (selectedMove.getName().equalsIgnoreCase("Defend")) {
-            currentPlayer.setDefending(true);
-            log.append(currentPlayer.getName()).append(" is defending!\n");
-        } else {
-            currentPlayer.setDefending(false);
-            String damageLog = target.takeDamage(selectedMove.getDamage());
-            log.append(damageLog).append("\n");
-        }
-
+    // EP check and usage
+    Ability[] abilities = currentPlayer.getAbilities();
+    if (moveChoice < 0 || moveChoice >= abilities.length) {
+        log.append(currentPlayer.getName()).append(" made an invalid move.\n");
         return log.toString();
     }
+
+    Ability selectedMove = abilities[moveChoice];
+    currentPlayer.useEP(selectedMove.getEpCost());
+    log.append(currentPlayer.getName()).append(" used ").append(selectedMove.getName()).append("\n");
+
+    // Handle special abilities
+    if (selectedMove.getName().equalsIgnoreCase("Recharge")) {
+        currentPlayer.recharge();
+        log.append(currentPlayer.getName()).append(" recharged and regained 5 EP!\n");
+    } else if (selectedMove.getName().equalsIgnoreCase("Defend")) {
+        currentPlayer.setDefending(true);
+        log.append(currentPlayer.getName()).append(" is defending!\n");
+    } else {
+        currentPlayer.setDefending(false);
+        String damageLog = target.takeDamage(selectedMove.getDamage());
+        log.append(damageLog).append("\n");
+    }
+
+    return log.toString();
+}
+
 
     /**
      * Manages the magic items when in battle.
      */
     private void useMagicItemInBattle(Character player) {
         ArrayList<MagicItem> singleUseItems = getSingleUseItems(player);
-
+        
         if (singleUseItems.isEmpty()) {
             return;
         }
-
+        
         System.out.println("\n[" + player.getName() + "'s Single-Use Magic Items]");
         for (int i = 0; i < singleUseItems.size(); i++) {
             MagicItem item = singleUseItems.get(i);
             System.out.println((i + 1) + ". " + item.getName() + " - " + item.getEffect());
         }
-
+        
         System.out.print("\nChoose an item to use (0 to cancel): ");
         int itemChoice = getIntInput(scanner);
-
+        
         while (true) {
             if (itemChoice == 0) {
                 System.out.println("[" + player.getName() + " decided not to use any magic item.]");
@@ -492,12 +518,12 @@ public class Battle {
     }
 
     /**
-     * Sets pre-attack flags for each character based on their selected move.
+     * Sets pre-attack flags for each character based on their selected move. 
      * These flags influence how damage or effects are applied
      * during the round's execution.
      *
-     * @param player     the character whose move is being analyzed
-     * @param moveChoice the move selected by the character
+     * @param player the character whose move is being analyzed
+     * @param moveChoice    the move selected by the character
      */
 
     private void setFlagsBeforeAttacks(Character player, int moveChoice) {

@@ -27,7 +27,7 @@ public class CharacterListView extends JFrame {
         title = new JLabel("Character List", SwingConstants.CENTER);
         title.setFont(new Font("Serif", Font.BOLD, 24));
 
-        // New panel to hold buttons
+        // Panel to hold character buttons
         characterButtonPanel = new JPanel();
         characterButtonPanel.setLayout(new GridLayout(0, 1, 10, 10));
 
@@ -70,7 +70,6 @@ public class CharacterListView extends JFrame {
     }
 
     public void showCharacterDetails(Character character) {
-        // Show a pop-up with the details or you can forward to another view
         StringBuilder sb = new StringBuilder();
         sb.append("Name: ").append(character.getName()).append("\n");
         sb.append("Race: ").append(character.getRace()).append("\n");
@@ -97,6 +96,9 @@ public class CharacterListView extends JFrame {
 
     public void showCharacterList(List<Character> characters) {
         characterButtonPanel.removeAll();
+        
+        // Reset layout to GridLayout for buttons
+        characterButtonPanel.setLayout(new GridLayout(0, 1, 10, 10));
 
         for (Character c : characters) {
             JButton charButton = new JButton(c.getName() + " (" + c.getCharacterClass() + ")");

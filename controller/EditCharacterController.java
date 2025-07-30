@@ -9,13 +9,21 @@ import java.awt.event.*;
 import java.util.List;
 
 public class EditCharacterController {
+    private EditCharacterView view;
+    private GameModel model;
+    private MainMenuView mainView;
+    private boolean isPlayer1;
+
     public EditCharacterController(EditCharacterView view, GameModel model, MainMenuView mainView, boolean isPlayer1) {
+        this.view = view;
+        this.model = model;
+        this.mainView = mainView;
+        this.isPlayer1 = isPlayer1;
+
         List<Character> characters = model.getCharactersForPlayer(isPlayer1 ? 1 : 2);
 
         if (characters.isEmpty()) {
             view.showNoCharacters();
-            view.dispose();
-            // mainView.setVisible(true);
             return;
         }
 
@@ -34,14 +42,17 @@ public class EditCharacterController {
 
                 if (result == JOptionPane.YES_OPTION) {
                     view.dispose();
-                    new ActualEditCharacterView();
-                    new ActualEditCharacterController(model, selected, isPlayer1);
+                    new ActualEditCharacterController(model, selected, isPlayer1, mainView);
                 }
             }
         });
 
+        // Add back button listener
+        view.addBackButtonListener(e -> {
+            view.dispose();
+            mainView.setVisible(true);
+        });
+
         view.setVisible(true);
     }
-
-    
 }
