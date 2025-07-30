@@ -8,6 +8,10 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * CharacterCreationController manages the character creation workflow
+ * Guides the user through name, race, class, and ability selection
+ */
 public class CharacterCreationController {
     private GameModel model;
     private JFrame previousFrame;
@@ -22,8 +26,15 @@ public class CharacterCreationController {
     private Race selectedRace;
     private String selectedClass;
     private List<Ability> selectedAbilities = new ArrayList<>();
-    private boolean isPlayer1; 
+    private boolean isPlayer1;
 
+    /**
+     * Constructor initializes the character creation process
+     * 
+     * @param model         the game model
+     * @param previousFrame the previous frame to return to
+     * @param isPlayer1     whether this is for player 1
+     */
     public CharacterCreationController(GameModel model, JFrame previousFrame, boolean isPlayer1) {
         this.model = model;
         this.previousFrame = previousFrame;
@@ -35,7 +46,6 @@ public class CharacterCreationController {
         List<model.Character> currentList = model.getCharactersForPlayer(isPlayer1 ? 1 : 2);
         nameInputView = new CharacterNameInputView();
         nameInputView.setVisible(true);
-        
 
         nameInputView.addNextButtonListener(e -> {
             String name = nameInputView.getCharacterName();
@@ -43,7 +53,7 @@ public class CharacterCreationController {
                 JOptionPane.showMessageDialog(nameInputView, "Name cannot be empty.");
                 return;
             }
-            if (model.isNameTaken(name, currentList )) {
+            if (model.isNameTaken(name, currentList)) {
                 JOptionPane.showMessageDialog(nameInputView, "Name already exists.");
                 return;
             }
@@ -83,7 +93,8 @@ public class CharacterCreationController {
     }
 
     private void showAbilitySelectionView() {
-        // List<Ability> classAbilities = model.getAllAbilities().getAbilitiesByClass(selectedClass);
+        // List<Ability> classAbilities =
+        // model.getAllAbilities().getAbilitiesByClass(selectedClass);
         abilitySelectionView = new AbilitySelectionView(selectedClass);
         abilitySelectionView.setVisible(true);
 
@@ -101,12 +112,13 @@ public class CharacterCreationController {
     }
 
     private void createCharacter() {
-    boolean success = model.createCharacter(isPlayer1 ? 1 : 2 ,characterName, selectedRace, selectedClass, selectedAbilities);
-    if (!success) {
-        JOptionPane.showMessageDialog(abilitySelectionView, "Character creation failed. Name might be taken or limit reached.");
+        boolean success = model.createCharacter(isPlayer1 ? 1 : 2, characterName, selectedRace, selectedClass,
+                selectedAbilities);
+        if (!success) {
+            JOptionPane.showMessageDialog(abilitySelectionView,
+                    "Character creation failed. Name might be taken or limit reached.");
+        }
     }
-}
-
 
     private void showSuccessView() {
         successView = new CharacterCreationSuccessView();

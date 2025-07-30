@@ -1,4 +1,5 @@
 package model;
+
 /**
  * The Character class represents a player-controlled fighter in the Fatal Fantasy: Tactics game.
  * Each character has a name, class type, health points (HP), energy points (EP),
@@ -37,13 +38,18 @@ public class Character {
     public static final int BASE_MAX_EP = 50;
 
     /**
-     * Constructs a Character object with the specified name, race, class name, and list of abilities.
-     * Initializes the character's HP and EP to their maximum values (including race bonuses) and sets all combat flags to false.
+     * Constructs a Character object with the specified name, race, class name, and
+     * list of abilities.
+     * Initializes the character's HP and EP to their maximum values (including race
+     * bonuses) and sets all combat flags to false.
      *
-     * @param name the unique name of the character
-     * @param race the race of the character (e.g., Human, Dwarf, Elf, Gnome)
-     * @param characterClass the class type of the character (e.g., Mage, Rogue, Warrior)
-     * @param abilities[] the list of abilities selected by the character from their class pool
+     * @param name           the unique name of the character
+     * @param race           the race of the character (e.g., Human, Dwarf, Elf,
+     *                       Gnome)
+     * @param characterClass the class type of the character (e.g., Mage, Rogue,
+     *                       Warrior)
+     * @param abilities[]    the list of abilities selected by the character from
+     *                       their class pool
      */
     public Character(String name, Race race, String characterClass, Ability[] abilities) {
         this.name = name;
@@ -301,8 +307,10 @@ public class Character {
             this.maxEP = baseMaxEP;
         }
 
-        if (hp > maxHP) hp = maxHP;
-        if (ep > maxEP) ep = maxEP;
+        if (hp > maxHP)
+            hp = maxHP;
+        if (ep > maxEP)
+            ep = maxEP;
     }
 
     /**
@@ -312,11 +320,13 @@ public class Character {
         if (equippedItem != null && equippedItem.isPassive()) {
             if (equippedItem.isHealPerTurn()) {
                 heal(equippedItem.getHealAmount());
-                System.out.println(name + " regenerated " + equippedItem.getHealAmount() + " HP from " + equippedItem.getName());
+                System.out.println(
+                        name + " regenerated " + equippedItem.getHealAmount() + " HP from " + equippedItem.getName());
             }
             if (equippedItem.getEpPerTurn() > 0) {
                 restoreEP(equippedItem.getEpPerTurn());
-                System.out.println(name + " gained " + equippedItem.getEpPerTurn() + " EP from " + equippedItem.getName());
+                System.out.println(
+                        name + " gained " + equippedItem.getEpPerTurn() + " EP from " + equippedItem.getName());
             }
         }
     }
@@ -351,10 +361,9 @@ public class Character {
     }
 
     /**
-     * Heals the character by depending on the amount, while it also checks if it
-     * exceeds the character's maximum HP (including race bonuses).
+     * Heals the character by the specified amount
      * 
-     * @param amount The amount to heal the character.
+     * @param amount the amount to heal
      */
     public void heal(int amount) {
         if (hp + amount > maxHP) {
@@ -365,9 +374,9 @@ public class Character {
     }
 
     /**
-     * Restores the character's EP by the specified amount, capped at maximum EP.
+     * Restores EP by the specified amount, capped at maximum
      * 
-     * @param amount The amount of EP to restore.
+     * @param amount the amount of EP to restore
      */
     public void restoreEP(int amount) {
         if (ep + amount > maxEP) {
@@ -378,35 +387,34 @@ public class Character {
     }
 
     /**
-     * Reduces the character's HP by a given damage amount, considering if the
-     * character is defending, evading, or shielded.
+     * Applies damage to the character considering defensive states
      * 
-     * @param damage The amount of damage to be taken by the character.
+     * @param damage the amount of damage to apply
+     * @return message describing the damage result
      */
     public String takeDamage(int damage) {
-    if (isShielded) {
-        return name + " is shielded and takes no damage!";
-    }
-    if (isEvading) {
-        if (Math.random() < 0.5) {
-            return name + " evaded the attack!";
-        } else {
-            // continue to damage
+        if (isShielded) {
+            return name + " is shielded and takes no damage!";
         }
-    }
-    if (isDefending) {
-        damage /= 2;
-    }
+        if (isEvading) {
+            if (Math.random() < 0.5) {
+                return name + " evaded the attack!";
+            } else {
+                // continue to damage
+            }
+        }
+        if (isDefending) {
+            damage /= 2;
+        }
 
-    if (hp - damage < 0) {
-        hp = 0;
-    } else {
-        hp -= damage;
+        if (hp - damage < 0) {
+            hp = 0;
+        } else {
+            hp -= damage;
+        }
+
+        return name + " takes " + damage + " damage!";
     }
-
-    return name + " takes " + damage + " damage!";
-}
-
 
     /**
      * Uses a specified amount of EP, ensuring it does not go below zero.
@@ -422,7 +430,8 @@ public class Character {
     }
 
     /**
-     * Regenerates the character's EP by 5, to make sure that it does not exceed the maximum EP
+     * Regenerates the character's EP by 5, to make sure that it does not exceed the
+     * maximum EP
      * also called at the start of each round in battle.
      */
     public void recharge() {
@@ -431,7 +440,9 @@ public class Character {
         } else {
             this.ep += 5;
         }
-    }    /**
+    }
+
+    /**
      * Sets the character's defending status.
      * 
      * @param defending true if the character is defending, false otherwise.
@@ -459,7 +470,8 @@ public class Character {
     }
 
     /**
-     * Displays the character's details, including name, race, class, HP, EP, magic items, and
+     * Displays the character's details, including name, race, class, HP, EP, magic
+     * items, and
      * abilities.
      */
     public void displayCharacter() {
@@ -469,15 +481,16 @@ public class Character {
         System.out.println("HP: " + hp + "/" + maxHP);
         System.out.println("EP: " + ep + "/" + maxEP);
         System.out.println("Wins: " + winCount);
-        
+
         // Display equipped item
         if (equippedItem != null) {
-            System.out.println("Equipped Item: " + equippedItem.getName() + " (" + equippedItem.getActivationType() + ")");
+            System.out.println(
+                    "Equipped Item: " + equippedItem.getName() + " (" + equippedItem.getActivationType() + ")");
             System.out.println("   Effect: " + equippedItem.getEffect());
         } else {
             System.out.println("Equipped Item: None");
         }
-        
+
         // Display inventory
         System.out.println("Inventory (" + inventory.size() + " items):");
         if (inventory.isEmpty()) {
@@ -488,7 +501,7 @@ public class Character {
                 System.out.println("   " + (i + 1) + ". " + item.getName() + " (" + item.getActivationType() + ")");
             }
         }
-        
+
         System.out.println("Abilities:");
         for (Ability ability : abilities) {
             System.out.println("- " + ability.getName() + ": " + ability.getDescription());
@@ -510,7 +523,8 @@ public class Character {
     }
 
     /**
-     * Resets the character's stats to their maximum values (including race bonuses and equipped items) for the start of the
+     * Resets the character's stats to their maximum values (including race bonuses
+     * and equipped items) for the start of the
      * battle.
      */
     public void resetStats() {
@@ -523,7 +537,7 @@ public class Character {
      * Restores the character's HP or EP by a specified amount, ensuring it does not
      * exceed the maximum values (including race bonuses).
      * 
-     * @param type   The type of bonus the player will get 
+     * @param type   The type of bonus the player will get
      * @param amount The amount to restore.
      */
     public void restore(String type, int amount) {
