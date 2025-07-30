@@ -1,4 +1,4 @@
-package view;
+   package view;
 
 import model.Character;
 
@@ -67,28 +67,27 @@ public class EditCharacterView extends JFrame {
         characterButtonPanel.repaint();
     }
 
-    public void showCharacterList(List<Character> characters) {
+    public void showCharacterList(List<Character> characters, ActionListener listener) {
         characterButtonPanel.removeAll();
+
         for (Character character : characters) {
-            JButton characterButton = new JButton(character.getName() + " (" + character.getCharacterClass() + ")");
-            characterButton.setFont(new Font("Serif", Font.PLAIN, 14));
-            characterButton.setBackground(new Color(138, 3, 3));
+            JButton characterButton = new JButton(character.getName());
+            characterButton.setFont(new Font("Serif", Font.PLAIN, 18));
+            characterButton.setBackground(new Color(138, 8, 8));
             characterButton.setForeground(Color.WHITE);
-            characterButton.addActionListener(e -> {
-                int confirm = JOptionPane.showConfirmDialog(
-                        this,
-                        "You want to edit " + character.getName() + "?",
-                        "Confirm Deletion",
-                        JOptionPane.YES_NO_OPTION
-                );
-                if (confirm == JOptionPane.YES_OPTION && editCharacterListener != null) {
-                    editCharacterListener.onCharacterEdit(character);
-                }
-            });
+            characterButton.setActionCommand(character.getName());
+            characterButton.addActionListener(listener);
+
             characterButtonPanel.add(characterButton);
         }
+
         characterButtonPanel.revalidate();
         characterButtonPanel.repaint();
+    }
+
+
+    public JButton getBackButton() {
+        return back;
     }
 
     public void addBackButtonListener(ActionListener listener) {

@@ -21,7 +21,7 @@ public class MainMenuController {
     private void setUpListeners() {
         view.addViewListener(new ViewListener());
         view.addCreateListener(new CreateListener());
-        // view.addEditListener(new EditListener());
+        view.addEditListener(new EditListener());
         view.addDeleteListener(new DeleteListener());
         view.addChooseListener(new ChooseListener());
     }
@@ -46,15 +46,15 @@ public class MainMenuController {
         }
     }
 
-    // class EditListener implements ActionListener {
-    //     @Override
-    //     public void actionPerformed(ActionEvent e) {
-    //         view.setVisible(false);
-    //         CharacterEditView editView = new CharacterEditView(view);
-    //         new CharacterListController(editView, view);
-    //         editView.setVisible(true);
-    //     }
-    // }
+    class EditListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            view.setVisible(false);
+            EditCharacterView editView = new EditCharacterView();
+            new EditCharacterController(editView, model, view, currentPlayer == 1);
+            editView.setVisible(true);
+        }
+    }
 
     class DeleteListener implements ActionListener {
         @Override

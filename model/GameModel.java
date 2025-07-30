@@ -111,6 +111,17 @@ public class GameModel {
         }
         return false;
     }
+
+        public Character getCharacterByName(String name, int player) {
+        List<Character> characters = (player == 1) ? player1Characters : player2Characters;
+        for (Character c : characters) {
+            if (c.getName().equals(name)) {
+                return c;
+            }
+        }
+        return null; // not found
+    }
+
     
     /**
      * Gets all characters

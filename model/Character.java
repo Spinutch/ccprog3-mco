@@ -151,6 +151,10 @@ public class Character {
         this.name = name;
     }
 
+    public void setEquippedItem(MagicItem item) {
+        this.equippedItem = item;
+    }
+
     /**
      * Sets the character's class.
      * 

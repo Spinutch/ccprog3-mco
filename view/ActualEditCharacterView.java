@@ -2,8 +2,9 @@ package view;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 
-public class ActualEditCharacterView extends JFrame{
+public class ActualEditCharacterView extends JFrame {
 
     private JLabel title;
     
@@ -40,28 +41,69 @@ public class ActualEditCharacterView extends JFrame{
         detailsButton.setForeground(Color.WHITE);
         ManageButton.setForeground(Color.WHITE);
         EditAbilitiesButton.setForeground(Color.WHITE);
-
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(finishButton);
-        buttonPanel.add(detailsButton);
-        buttonPanel.add(ManageButton);
-        buttonPanel.add(EditAbilitiesButton);
-
-        add(title, BorderLayout.NORTH);
-        add(buttonPanel, BorderLayout.CENTER);
+        finishButton.setFont(new Font("Serif", Font.BOLD, 16));
+        detailsButton.setFont(new Font("Serif", Font.BOLD, 16));
+        ManageButton.setFont(new Font("Serif", Font.BOLD, 16));
+        EditAbilitiesButton.setFont(new Font("Serif", Font.BOLD, 16));
+        finishButton.setMargin(new Insets(20, 20, 20, 20));
+        detailsButton.setMargin(new Insets(20, 20, 20, 20));
+        ManageButton.setMargin(new Insets(20, 20, 20, 20));
+        EditAbilitiesButton.setMargin(new Insets(20, 20, 20, 20));
     }
 
-
-
     private void setFrame() {
+
+        setLayout(new BorderLayout());
+
+        //North panel for title
+        JPanel titlePanel = new JPanel();
+        titlePanel.add(title);
+        add(titlePanel, BorderLayout.NORTH);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 30));
+        
+        buttonPanel.add(EditAbilitiesButton);
+        buttonPanel.add(ManageButton);
+        buttonPanel.add(detailsButton);
+        buttonPanel.add(finishButton);
+
+        add(buttonPanel, BorderLayout.CENTER);
+        
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
     }
 
+    public void setEditAbilitiesListener(ActionListener listener) {
+        EditAbilitiesButton.addActionListener(listener);
+    }
 
+    public void setManageMagicItemsListener(ActionListener listener) {
+        ManageButton.addActionListener(listener);
+    }
 
-    
+    public void setViewDetailsListener(ActionListener listener) {
+        detailsButton.addActionListener(listener);
+    }
+
+    public void setBackListener(ActionListener listener) {
+        finishButton.addActionListener(listener);
+    }
+
+    public JButton getFinishButton() {
+        return finishButton;
+    }
+
+    public JButton getDetailsButton() {
+        return detailsButton;
+    }
+
+    public JButton getManageButton() {
+        return ManageButton;
+    }
+
+    public JButton getEditAbilitiesButton() {
+        return EditAbilitiesButton;
+    }    
 }
